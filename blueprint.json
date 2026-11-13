@@ -1,0 +1,39 @@
+{
+ "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+ "landingPage": "/?post_type=product",
+ "preferredVersions": {
+  "php": "8.3",
+  "wp": "latest"
+ },
+ "login": true,
+ "steps": [
+  {
+   "step": "installPlugin",
+   "pluginData": {
+    "resource": "wordpress.org/plugins",
+    "slug": "woocommerce"
+   },
+   "options": {
+    "activate": true
+   }
+  },
+  {
+   "step": "installTheme",
+   "themeData": {
+    "resource": "wordpress.org/themes",
+    "slug": "storefront"
+   },
+   "options": {
+    "activate": true
+   }
+  },
+  {
+   "step": "setSiteLanguage",
+   "language": "es_CL"
+  },
+  {
+   "step": "runPHP",
+   "code": "<?php require_once '/wordpress/wp-load.php'; update_option('woocommerce_coming_soon','no'); $p = new WC_Product_Simple(); $p->set_name('Producto de prueba'); $p->set_regular_price('12990'); $p->save(); file_put_contents('/wordpress/wp-content/log.txt', 'OK ' . get_locale() . ' WC ' . WC()->version . ' PHP ' . PHP_VERSION . ' GD ' . (extension_loaded('gd')?'si':'no'));"
+  }
+ ]
+}
