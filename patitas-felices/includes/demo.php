@@ -7,6 +7,19 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/*
+ * WordPress Playground no respeta la expiración de las cookies: al cerrar sesión guarda la cookie de sesión de
+ * WooCommerce con el valor "deleted". WooCommerce cree entonces que hay una sesión, no la puede leer y genera un
+ * cliente nuevo en cada visita, con lo que el nonce del formulario "Acceder" de Mi cuenta nunca coincide y el
+ * inicio de sesión falla sin mensaje. Una cookie de sesión ilegible no sirve para nada, así que se ignora.
+ */
+foreach ( array_keys( $_COOKIE ) as $patitas_cookie ) {
+	if ( 0 === strpos( $patitas_cookie, 'wp_woocommerce_session_' ) && substr_count( (string) $_COOKIE[ $patitas_cookie ], '|' ) < 3 ) {
+		unset( $_COOKIE[ $patitas_cookie ] );
+	}
+}
+unset( $patitas_cookie );
+
 function patitas_demo_activa() {
 	if ( 'yes' !== get_option( 'patitas_demo' ) ) {
 		return false;
