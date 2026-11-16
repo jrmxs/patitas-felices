@@ -10,7 +10,8 @@ defined( 'ABSPATH' ) || exit;
 add_action( 'wp_enqueue_scripts', function () {
 	wp_enqueue_style( 'patitas-fuentes', 'https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap', array(), null );
 	wp_enqueue_style( 'patitas', PATITAS_URL . 'assets/patitas.css', array(), PATITAS_VER );
-	wp_enqueue_script( 'patitas', PATITAS_URL . 'assets/patitas.js', array(), PATITAS_VER, true );
+	wp_enqueue_style( 'patitas-prototipo', PATITAS_URL . 'assets/patitas-prototipo.css', array( 'patitas' ), PATITAS_VER );
+	wp_enqueue_script( 'patitas', PATITAS_URL . 'assets/patitas.js', array( 'jquery' ), PATITAS_VER, true );
 	// El resumen del carrito de la cabecera se calcula en el servidor en cada página; la copia guardada en el
 	// navegador (cart fragments) queda desactualizada en Playground, que maneja las cookies por su cuenta.
 	wp_dequeue_script( 'wc-cart-fragments' );
@@ -300,15 +301,22 @@ add_action( 'woocommerce_before_add_to_cart_button', function () {
 	if ( ! $product || ! patitas_es_consumible( $product->get_id() ) ) {
 		return;
 	}
+	$v      = patitas_variacion_defecto( $product );
+	$precio = (float) ( $v ? $v->get_price() : $product->get_price() );
 	?>
-	<fieldset class="pf-suscripcion">
-		<legend>¿Cómo quieres comprarlo?</legend>
-		<label><input type="radio" name="patitas_suscripcion" value="" checked> Compra única</label>
-		<label><input type="radio" name="patitas_suscripcion" value="4"> Suscríbete y ahorra 5 %: cada
-			<select name="patitas_frecuencia" aria-label="Frecuencia de la suscripción"><option value="4">4 semanas</option><option value="6">6 semanas</option><option value="8">8 semanas</option></select>
+	<div class="pf-compra-opciones" role="radiogroup" aria-label="Forma de compra">
+		<label class="pf-opcion">
+			<input type="radio" name="patitas_suscripcion" value="4">
+			<span><b>Suscríbete y ahorra 5 %</b> por <b class="pf-precio-sub"><?php echo esc_html( patitas_clp( round( $precio * 0.95 ) ) ); ?></b>
+				<small>Te lo enviamos cada
+					<select name="patitas_frecuencia" aria-label="Frecuencia de la suscripción"><option value="4">30 días</option><option value="6">45 días</option><option value="8">60 días</option></select>
+					· Pausa o cancela cuando quieras.</small></span>
 		</label>
-		<small>Te avisamos 2 días antes de cada envío y puedes pausar cuando quieras.</small>
-	</fieldset>
+		<label class="pf-opcion">
+			<input type="radio" name="patitas_suscripcion" value="" checked>
+			<span>Compra única: <b class="pf-precio-unico"><?php echo esc_html( patitas_clp( $precio ) ); ?></b></span>
+		</label>
+	</div>
 	<?php
 } );
 
@@ -348,13 +356,18 @@ add_action( 'woocommerce_single_product_summary', function () {
 	<div class="pf-despacho">
 		<label for="pf-comuna"><b>Calcula tu despacho</b></label>
 		<select id="pf-comuna">
-			<option value="hoy|2990">Copiapó</option>
-			<option value="hoy|2990">Caldera</option>
-			<option value="hoy|2990">Tierra Amarilla</option>
-			<option value="courier|5990">Vallenar y resto de Atacama</option>
-			<option value="courier|5990">Otra región</option>
+			<option value="local">Copiapó</option>
+			<option value="local">Caldera</option>
+			<option value="local">Tierra Amarilla</option>
+			<option value="region">Vallenar y resto de Atacama</option>
+			<option value="region">Otra región de Chile</option>
 		</select>
-		<p id="pf-despacho-res" aria-live="polite">Llega <b>hoy</b> si compras antes de las 14:00 · $2.990 (gratis sobre $40.000). También puedes retirar en tienda sin costo.</p>
+		<ul id="pf-despacho-lista" aria-live="polite">
+			<li><span>Despacho mismo día (antes de 14:00)</span><b>$2.990</b></li>
+			<li><span>Despacho programado (elige día)</span><b>$1.990</b></li>
+			<li><span>Retiro en tienda Copiapó</span><b>Gratis</b></li>
+		</ul>
+		<small>Envío gratis sobre $40.000 en Copiapó, Caldera y Tierra Amarilla.</small>
 	</div>
 	<?php
 }, 35 );
@@ -474,11 +487,11 @@ function patitas_barra_envio() {
 	$falta = PATITAS_ENVIO_GRATIS - $sub;
 	$pct   = min( 100, round( $sub / PATITAS_ENVIO_GRATIS * 100 ) );
 	$texto = $falta > 0
-		? sprintf( 'Te faltan <b>%s</b> para el <b>envío gratis</b> el mismo día.', wc_price( $falta ) )
-		: '¡Tu pedido tiene <b>envío gratis</b> el mismo día en Copiapó, Caldera y Tierra Amarilla!';
+		? sprintf( 'Te faltan <b>%s</b> para el envío gratis', wc_price( $falta ) )
+		: '<b>¡Tienes envío gratis!</b>';
 	printf( '<div class="pf-envio"><p>%s</p><div class="pf-barra" role="progressbar" aria-valuenow="%d" aria-valuemin="0" aria-valuemax="100"><b style="width:%d%%"></b></div></div>', wp_kses_post( $texto ), (int) $pct, (int) $pct );
 }
-add_action( 'woocommerce_before_cart', 'patitas_barra_envio' );
+add_action( 'woocommerce_before_cart_totals', 'patitas_barra_envio' );
 add_action( 'woocommerce_widget_shopping_cart_before_buttons', 'patitas_barra_envio' );
 
 // "Completa tu pedido": venta cruzada calculada por el recomendador.
@@ -501,7 +514,8 @@ add_filter( 'woocommerce_cart_crosssell_ids', function ( $ids ) {
 	return $recos ? wp_list_pluck( $recos, 'id' ) : $ids;
 } );
 add_filter( 'woocommerce_product_cross_sells_products_heading', function () {
-	return 'Completa tu pedido';
+	$sub = WC()->cart ? (float) WC()->cart->get_displayed_subtotal() : 0;
+	return $sub < PATITAS_ENVIO_GRATIS ? 'Agrega y llega al envío gratis' : 'Te podría servir también';
 } );
 add_filter( 'woocommerce_cross_sells_total', function () {
 	return 3;
@@ -512,9 +526,9 @@ add_filter( 'woocommerce_cross_sells_columns', function () {
 
 /* ------------------------------------------------------------------ checkout */
 
+// Indicador de pasos (el JavaScript del checkout lo actualiza al avanzar).
 add_action( 'woocommerce_before_checkout_form', function () {
-	echo '<ol class="pf-pasos"><li class="hecho">Carrito</li><li class="actual">Datos y despacho</li><li class="actual">Pago</li><li>Confirmación</li></ol>';
-	patitas_barra_envio();
+	echo '<ol class="pf-pasos" id="pf-pasos"><li class="actual">Datos</li><li>Despacho</li><li>Pago</li><li>Confirmación</li></ol>';
 }, 1 );
 
 add_filter( 'woocommerce_billing_fields', function ( $campos ) {
@@ -549,45 +563,53 @@ add_action( 'woocommerce_checkout_create_order', function ( $pedido ) {
 	}
 } );
 
-/* ------------------------------------------------------------------ confirmación */
+/* ------------------------------------------------------------------ confirmación (las usa templates/checkout/thankyou.php) */
 
-add_action( 'woocommerce_thankyou', function ( $order_id ) {
-	$pedido = wc_get_order( $order_id );
-	if ( ! $pedido ) {
-		return;
-	}
+function patitas_gracias_seguimiento( $pedido ) {
 	$retiro = false;
 	foreach ( $pedido->get_shipping_methods() as $envio ) {
 		if ( false !== strpos( $envio->get_method_id(), 'pickup' ) ) {
 			$retiro = true;
 		}
 	}
-	$pasos = $retiro
-		? array( array( 'Pedido recibido', 'hecho' ), array( 'Preparando tu pedido', 'actual' ), array( 'Listo para retiro (2 horas)', '' ), array( 'Retirado', '' ) )
-		: array( array( 'Pedido recibido', 'hecho' ), array( 'Preparando tu pedido', 'actual' ), array( 'En camino (hoy si pagaste antes de las 14:00)', '' ), array( 'Entregado', '' ) );
-	echo '<section class="pf-seguimiento"><h2>Seguimiento de tu pedido</h2><ol>';
-	foreach ( $pasos as $p ) {
-		printf( '<li class="%s">%s</li>', esc_attr( $p[1] ), esc_html( $p[0] ) );
+	$hora  = $pedido->get_date_paid() ? $pedido->get_date_paid()->date_i18n( 'H:i' ) : '';
+	$pasos = array(
+		array( 'Pago confirmado', 'Hoy, ' . $hora, 'hecho' ),
+		array( 'Preparando tu pedido', $retiro ? 'En la tienda de Copiapó' : 'En bodega de la tienda Copiapó', 'actual' ),
+		$retiro ? array( 'Listo para retiro', 'En unas 2 horas', '' ) : array( 'En camino', 'Estimado entre 17:00 y 21:00', '' ),
+		array( 'Entregado', 'Te pediremos tu opinión', '' ),
+	);
+	echo '<section class="pf-seguimiento"><h3>Seguimiento del pedido</h3><p class="pf-gris">Te avisaremos por WhatsApp en cada cambio de estado.</p><ol>';
+	foreach ( $pasos as $i => $p ) {
+		printf( '<li class="%s"><span class="pf-punto">%s</span><div><b>%s</b><small>%s</small></div></li>', esc_attr( $p[2] ), 'hecho' === $p[2] ? '✓' : (int) ( $i + 1 ), esc_html( $p[0] ), esc_html( $p[1] ) );
 	}
-	echo '</ol><p>Te avisaremos por correo y WhatsApp en cada cambio de estado. También puedes verlo en <a href="' . esc_url( patitas_url_cuenta( 'orders' ) ) . '">Mi cuenta › Pedidos</a>.</p></section>';
-}, 5 );
+	echo '</ol></section>';
+}
 
-add_action( 'woocommerce_thankyou', function ( $order_id ) {
-	$pedido = wc_get_order( $order_id );
-	if ( ! $pedido ) {
-		return;
+function patitas_codigo_referido( $pedido ) {
+	$uid = $pedido->get_customer_id();
+	$m   = $uid ? patitas_mascotas( $uid ) : array();
+	if ( $uid && $m ) {
+		return strtoupper( remove_accents( $pedido->get_billing_first_name() . '-' . $m[0]['nombre'] ) );
 	}
+	return 'AMIGO5000';
+}
+
+function patitas_gracias_invita( $pedido ) {
+	$codigo = patitas_codigo_referido( $pedido );
+	$texto  = rawurlencode( 'Te regalo $5.000 en Patitas Felices con mi código ' . $codigo . ' ' . home_url( '/' ) );
+	printf( '<section class="pf-invita-amigo"><span class="pf-chip pf-chip-rosa">Comparte y gana</span><h3>Invita a un amigo y ganen $5.000 cada uno</h3><p>Tu código: <b>%1$s</b>. Tu amigo obtiene $5.000 en su primera compra sobre $25.000 y tú sumas 500 Huellitas.</p><div class="pf-botones"><a class="pf-boton-chico" href="https://wa.me/?text=%2$s" target="_blank" rel="noopener">WhatsApp</a><a class="pf-boton-chico" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a><button type="button" class="pf-boton-chico pf-copiar" data-codigo="%1$s">Copiar código</button></div></section>',
+		esc_html( $codigo ), esc_attr( $texto ) );
+}
+
+function patitas_gracias_recos( $pedido ) {
 	$contexto = array();
 	foreach ( $pedido->get_items() as $item ) {
 		$contexto[] = (int) $item->get_product_id();
 	}
-	$recos = patitas_recomendar( array(
-		'contexto' => $contexto,
-		'mascotas' => patitas_pref( 'personalizacion' ) ? patitas_mascotas() : array(),
-		'limite'   => 4,
-	) );
-	$codigo = 'AMIGO5000';
-	printf( '<section class="pf-invita-amigo"><b>Invita a un amigo</b><p>Comparte el código <code>%s</code>: tu amigo recibe $5.000 en su primera compra sobre $25.000 y tú recibes otros $5.000.</p><a class="button pf-btn-rosa" href="https://wa.me/?text=%s" target="_blank" rel="noopener">Compartir por WhatsApp</a></section>',
-		esc_html( $codigo ), rawurlencode( 'Te regalo $5.000 en Patitas Felices con el código ' . $codigo . ' ' . home_url( '/' ) ) );
-	patitas_mostrar_productos( $recos, 'Para tu próxima compra' );
-}, 20 );
+	$mascotas = patitas_pref( 'personalizacion' ) ? patitas_mascotas() : array();
+	$recos    = patitas_recomendar( array( 'contexto' => $contexto, 'mascotas' => $mascotas, 'limite' => 4 ) );
+	$titulo   = $mascotas ? 'A ' . $mascotas[0]['nombre'] . ' también podría gustarle' : 'Para tu próxima compra';
+	echo '<span class="pf-chip pf-chip-rosa">Para tu próxima compra</span>';
+	patitas_mostrar_productos( $recos, $titulo );
+}

@@ -97,7 +97,7 @@ def blueprint():
     rapido = {
         "$schema": "https://playground.wordpress.net/blueprint-schema.json",
         "meta": META,
-        "landingPage": "/",
+        "landingPage": "/?patitas_como=cliente",
         "preferredVersions": {"php": "8.3", "wp": "7.1"},
         "steps": [
             {"step": "importWordPressFiles", "wordPressFilesZip": {"resource": "url", "url": f"{REPO_RAW}/sitio.zip?v={v}"}},

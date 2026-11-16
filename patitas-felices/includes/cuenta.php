@@ -41,26 +41,6 @@ foreach ( array_keys( PATITAS_ENDPOINTS ) as $patitas_e ) {
 	} );
 }
 
-/* ------------------------------------------------------------------ escritorio de la cuenta */
-
-add_action( 'woocommerce_account_dashboard', function () {
-	$uid = get_current_user_id();
-	echo '<div class="pf-cuenta-resumen">';
-	patitas_tarjeta_recompra( $uid );
-	$m = patitas_mascotas( $uid );
-	echo '<div class="pf-tarjeta"><b>Tus mascotas</b>';
-	if ( $m ) {
-		echo '<ul>';
-		foreach ( $m as $x ) {
-			printf( '<li>%s · %s %s, %s kg</li>', esc_html( $x['nombre'] ), esc_html( patitas_singular( $x['especie'] ) ), esc_html( strtolower( $x['etapa'] ) ), esc_html( $x['peso'] ) );
-		}
-		echo '</ul>';
-	} else {
-		echo '<p>Aún no registras mascotas. Con su perfil calculamos recordatorios y recomendaciones.</p>';
-	}
-	printf( '<a class="button" href="%s">Administrar mascotas</a></div></div>', esc_url( wc_get_account_endpoint_url( 'mis-mascotas' ) ) );
-} );
-
 /* ------------------------------------------------------------------ mis mascotas */
 
 add_action( 'template_redirect', function () {
@@ -107,7 +87,8 @@ add_action( 'template_redirect', function () {
 				: 'Recibimos tu solicitud de eliminación de datos. Se procesa en un plazo máximo de 30 días, salvo los datos que la ley obliga a conservar (boletas).' );
 		}
 	}
-	wp_safe_redirect( wc_get_account_endpoint_url( 'privacidad' === $accion || false !== strpos( $accion, 'personal' ) ? 'privacidad' : 'mis-mascotas' ) );
+	$volver = wp_get_referer();
+	wp_safe_redirect( $volver ? $volver : wc_get_account_endpoint_url( 'privacidad' === $accion || false !== strpos( $accion, 'personal' ) ? 'privacidad' : 'mis-mascotas' ) );
 	exit;
 } );
 
@@ -183,31 +164,36 @@ add_action( 'woocommerce_account_suscripciones_endpoint', function () {
 
 /* ------------------------------------------------------------------ privacidad */
 
-add_action( 'woocommerce_account_privacidad_endpoint', function () {
+/** Interruptores de privacidad y solicitudes de datos (se usa en Privacidad y en el Resumen de la cuenta). */
+function patitas_form_privacidad() {
 	$prefs = array(
 		'personalizacion' => array( 'Recomendaciones personalizadas', 'Usamos tu historial y el perfil de tus mascotas para sugerirte productos. Si lo desactivas, verás solo productos populares.' ),
 		'recordatorios'   => array( 'Recordatorios de recompra', 'Calculamos cuándo se acabará el alimento de tus mascotas y te avisamos.' ),
 		'marketing'       => array( 'Ofertas por correo y WhatsApp', 'Solo te escribimos si lo autorizas. Puedes retirar el consentimiento cuando quieras.' ),
 	);
 	?>
-	<p>Tú decides cómo usamos tus datos (Ley N.º 21.719). Revisa la <a href="<?php echo esc_url( get_privacy_policy_url() ); ?>">Política de privacidad</a>.</p>
 	<form method="post" class="pf-form pf-privacidad">
 		<?php wp_nonce_field( 'patitas_cuenta' ); ?>
 		<input type="hidden" name="patitas_accion" value="privacidad">
 		<?php foreach ( $prefs as $k => $p ) : ?>
 			<label class="pf-interruptor">
-				<input type="checkbox" name="<?php echo esc_attr( $k ); ?>" value="1" <?php checked( patitas_pref( $k ) ); ?>>
 				<span><b><?php echo esc_html( $p[0] ); ?></b><small><?php echo esc_html( $p[1] ); ?></small></span>
+				<input type="checkbox" name="<?php echo esc_attr( $k ); ?>" value="1" <?php checked( patitas_pref( $k ) ); ?> onchange="this.form.submit()">
+				<span class="pf-switch" aria-hidden="true"></span>
 			</label>
 		<?php endforeach; ?>
-		<p><button type="submit" class="button">Guardar preferencias</button></p>
+		<noscript><button type="submit" class="button">Guardar preferencias</button></noscript>
 	</form>
-	<h3>Tus datos</h3>
 	<div class="pf-datos-acciones">
-		<form method="post"><?php wp_nonce_field( 'patitas_cuenta' ); ?><input type="hidden" name="patitas_accion" value="export_personal_data"><button type="submit" class="button">Solicitar copia de mis datos</button></form>
-		<form method="post"><?php wp_nonce_field( 'patitas_cuenta' ); ?><input type="hidden" name="patitas_accion" value="remove_personal_data"><button type="submit" class="button pf-btn-borde">Solicitar eliminación de mis datos</button></form>
+		<form method="post"><?php wp_nonce_field( 'patitas_cuenta' ); ?><input type="hidden" name="patitas_accion" value="export_personal_data"><button type="submit" class="pf-boton-chico">Descargar mis datos</button></form>
+		<form method="post"><?php wp_nonce_field( 'patitas_cuenta' ); ?><input type="hidden" name="patitas_accion" value="remove_personal_data"><button type="submit" class="pf-boton-chico">Eliminar mi cuenta</button></form>
 	</div>
 	<?php
+}
+
+add_action( 'woocommerce_account_privacidad_endpoint', function () {
+	echo '<p>Tú decides cómo usamos tus datos (Ley N.º 21.719). Revisa la <a href="' . esc_url( get_privacy_policy_url() ) . '">Política de privacidad</a>.</p>';
+	patitas_form_privacidad();
 } );
 
 /* ------------------------------------------------------------------ RUT en el perfil */

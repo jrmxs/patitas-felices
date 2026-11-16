@@ -212,7 +212,7 @@ function patitas_instalar_paginas() {
 	}
 	$woo = array(
 		'shop'      => array( 'Catálogo', 'tienda', null ),
-		'cart'      => array( 'Carrito', 'carrito', '[woocommerce_cart]' ),
+		'cart'      => array( 'Tu carrito', 'carrito', '[woocommerce_cart]' ),
 		'checkout'  => array( 'Finalizar compra', 'finalizar-compra', '[woocommerce_checkout]' ),
 		'myaccount' => array( 'Mi cuenta', 'mi-cuenta', '[woocommerce_my_account]' ),
 	);
@@ -393,6 +393,13 @@ function patitas_instalar_catalogo() {
 		$cats[ $c ] = patitas_termino( 'product_cat', $c );
 	}
 
+	// Galería: fotos de la comunidad como imágenes adicionales de cada ficha (miniaturas bajo la foto principal).
+	$fotos   = array();
+	foreach ( array( 1, 2, 3, 4 ) as $n ) {
+		$fotos[ $n ] = patitas_adjuntar( 'comunidad-' . $n . '.png', 'Mascota de la comunidad #PatitasFelicesCPY' );
+	}
+	$galeria = array( 'Perros' => array( $fotos[1], $fotos[3] ), 'Gatos' => array( $fotos[2], $fotos[4] ) );
+
 	$mapa        = array();
 	$variaciones = array();
 	foreach ( patitas_productos_data() as $d ) {
@@ -416,6 +423,7 @@ function patitas_instalar_catalogo() {
 		$p->set_low_stock_amount( 5 );
 		$p->set_reviews_allowed( true );
 		$p->set_image_id( patitas_adjuntar( 'productos/' . $d['id'] . '.png', $d['name'] ) );
+		$p->set_gallery_image_ids( array_filter( $galeria[ $d['sp'] ] ?? array() ) );
 
 		$etapas = 'Todas' === $d['stage'] ? array( 'Cachorro', 'Adulto', 'Senior' ) : array( $d['stage'] );
 		$attrs  = array();
@@ -793,6 +801,7 @@ function patitas_instalar_envios() {
 	$z->add_location( 'CL:CL-AT', 'state' );
 	$z->save();
 	patitas_metodo_envio( $z, 'flat_rate', array( 'title' => 'Despacho el mismo día (compras antes de las 14:00)', 'tax_status' => 'none', 'cost' => '2990' ) );
+	patitas_metodo_envio( $z, 'flat_rate', array( 'title' => 'Despacho programado (elige día)', 'tax_status' => 'none', 'cost' => '1990' ) );
 	patitas_metodo_envio( $z, 'free_shipping', array( 'title' => 'Envío gratis el mismo día', 'requires' => 'min_amount', 'min_amount' => (string) PATITAS_ENVIO_GRATIS, 'ignore_discounts' => 'no' ) );
 	patitas_metodo_envio( $z, 'local_pickup', array( 'title' => 'Retiro en tienda (listo en 2 horas)', 'tax_status' => 'none', 'cost' => '0' ) );
 
@@ -832,6 +841,7 @@ function patitas_instalar_cupones() {
 		array( 'BIENVENIDA10', 'percent', 10, '10 % en la primera compra (cuenta nueva).', 0, 1 ),
 		array( 'VUELVE10', 'percent', 10, 'Cupón de regreso para el segmento «En riesgo de abandono».', 0, 1 ),
 		array( 'AMIGO5000', 'fixed_cart', 5000, 'Programa «Invita a un amigo»: $5.000 en compras sobre $25.000.', 25000, 1 ),
+		array( 'FELIPE-ROCKY', 'fixed_cart', 5000, 'Código de referido del cliente demo Felipe: $5.000 en compras sobre $25.000.', 25000, 1 ),
 	);
 	foreach ( $cupones as $c ) {
 		if ( wc_get_coupon_id_by_code( $c[0] ) ) {

@@ -8,7 +8,7 @@
       "WooCommerce"
     ]
   },
-  "landingPage": "/",
+  "landingPage": "/?patitas_como=cliente",
   "preferredVersions": {
     "php": "8.3",
     "wp": "7.1"
@@ -18,7 +18,7 @@
       "step": "importWordPressFiles",
       "wordPressFilesZip": {
         "resource": "url",
-        "url": "https://raw.githubusercontent.com/jrmxs/patitas-felices/main/sitio.zip?v=20261116115359"
+        "url": "https://raw.githubusercontent.com/jrmxs/patitas-felices/main/sitio.zip?v=20261116122416"
       }
     },
     {
