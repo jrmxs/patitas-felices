@@ -23,7 +23,7 @@ add_filter( 'woocommerce_background_image_regeneration', '__return_false' );
 
 // Carrito, checkout y cuenta a ancho completo (sin barra lateral), como en el prototipo.
 add_action( 'wp', function () {
-	if ( function_exists( 'is_cart' ) && ( is_cart() || is_checkout() || is_account_page() || is_product() ) ) {
+	if ( function_exists( 'is_cart' ) && ( is_cart() || is_checkout() || is_account_page() || is_product() || is_page() ) ) {
 		remove_action( 'storefront_sidebar', 'storefront_get_sidebar', 10 );
 		add_filter( 'body_class', function ( $clases ) {
 			$clases[] = 'storefront-full-width-content';
@@ -173,17 +173,6 @@ function patitas_inicio() {
 		<?php echo do_shortcode( '[products limit="4" columns="4" orderby="popularity"]' ); ?>
 	</section>
 
-	<section class="pf-seccion">
-		<div class="pf-seccion-cab"><h2>Compra por categoría</h2></div>
-		<div class="pf-categorias">
-			<a href="<?php echo esc_url( add_query_arg( 'filter_especie', 'perros', $tienda ) ); ?>">🐶 Perros</a>
-			<a href="<?php echo esc_url( add_query_arg( 'filter_especie', 'gatos', $tienda ) ); ?>">🐱 Gatos</a>
-			<?php foreach ( array( 'Alimento', 'Arena', 'Farmacia', 'Accesorios', 'Kits' ) as $c ) : ?>
-				<a href="<?php echo esc_url( patitas_url_categoria( $c ) ); ?>"><?php echo esc_html( $c ); ?></a>
-			<?php endforeach; ?>
-		</div>
-	</section>
-
 	<section class="pf-social">
 		<div>
 			<span class="pf-chip pf-chip-blanco">#PatitasFelicesCPY</span>
@@ -306,14 +295,14 @@ add_action( 'woocommerce_before_add_to_cart_button', function () {
 	?>
 	<div class="pf-compra-opciones" role="radiogroup" aria-label="Forma de compra">
 		<label class="pf-opcion">
-			<input type="radio" name="patitas_suscripcion" value="4">
+			<input type="radio" name="patitas_suscripcion" value="4" checked>
 			<span><b>Suscríbete y ahorra 5 %</b> por <b class="pf-precio-sub"><?php echo esc_html( patitas_clp( round( $precio * 0.95 ) ) ); ?></b>
 				<small>Te lo enviamos cada
 					<select name="patitas_frecuencia" aria-label="Frecuencia de la suscripción"><option value="4">30 días</option><option value="6">45 días</option><option value="8">60 días</option></select>
 					· Pausa o cancela cuando quieras.</small></span>
 		</label>
 		<label class="pf-opcion">
-			<input type="radio" name="patitas_suscripcion" value="" checked>
+			<input type="radio" name="patitas_suscripcion" value="">
 			<span>Compra única: <b class="pf-precio-unico"><?php echo esc_html( patitas_clp( $precio ) ); ?></b></span>
 		</label>
 	</div>

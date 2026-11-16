@@ -8,12 +8,21 @@ defined( 'ABSPATH' ) || exit;
 const PATITAS_ENDPOINTS = array(
 	'mis-mascotas'  => 'Mis mascotas',
 	'suscripciones' => 'Suscripciones',
+	'peluqueria'    => 'Peluquería',
 	'privacidad'    => 'Privacidad',
+);
+
+const PATITAS_SERVICIOS = array(
+	'Baño y secado'      => 12990,
+	'Baño y corte'       => 19990,
+	'Deslanado'          => 24990,
+	'Baño felino'        => 16990,
+	'Corte de uñas'      => 4990,
 );
 
 add_action( 'init', function () {
 	foreach ( array_keys( PATITAS_ENDPOINTS ) as $e ) {
-		add_rewrite_endpoint( $e, EP_ROOT | EP_PAGES );
+		add_rewrite_endpoint( $e, EP_PAGES );
 	}
 } );
 
@@ -76,6 +85,20 @@ add_action( 'template_redirect', function () {
 			update_user_meta( $uid, 'patitas_pref_' . $p, empty( $_POST[ $p ] ) ? 'no' : 'si' );
 		}
 		wc_add_notice( 'Guardamos tus preferencias de privacidad.' );
+	} elseif ( 'peluqueria' === $accion ) {
+		$servicio = sanitize_text_field( wp_unslash( $_POST['servicio'] ?? '' ) );
+		$fecha    = sanitize_text_field( wp_unslash( $_POST['fecha'] ?? '' ) );
+		$hora     = sanitize_text_field( wp_unslash( $_POST['hora'] ?? '' ) );
+		$mascota  = sanitize_text_field( wp_unslash( $_POST['mascota'] ?? '' ) );
+		if ( isset( PATITAS_SERVICIOS[ $servicio ] ) && preg_match( '/^\d{4}-\d{2}-\d{2}$/', $fecha ) && preg_match( '/^\d{2}:\d{2}$/', $hora ) ) {
+			$horas   = (array) get_user_meta( $uid, 'patitas_peluqueria', true );
+			$horas   = array_values( array_filter( $horas ) );
+			$horas[] = array( 'servicio' => $servicio, 'fecha' => $fecha, 'hora' => $hora, 'mascota' => $mascota );
+			update_user_meta( $uid, 'patitas_peluqueria', $horas );
+			wc_add_notice( sprintf( 'Solicitamos tu hora de %s para %s el %s a las %s. Te confirmamos por WhatsApp.', strtolower( $servicio ), $mascota, date_i18n( 'j \d\e F', strtotime( $fecha ) ), $hora ) );
+		} else {
+			wc_add_notice( 'Revisa el servicio, la fecha y la hora.', 'error' );
+		}
 	} elseif ( in_array( $accion, array( 'export_personal_data', 'remove_personal_data' ), true ) ) {
 		$correo = wp_get_current_user()->user_email;
 		$id     = wp_create_user_request( $correo, $accion, array(), 'confirmed' );
@@ -87,8 +110,10 @@ add_action( 'template_redirect', function () {
 				: 'Recibimos tu solicitud de eliminación de datos. Se procesa en un plazo máximo de 30 días, salvo los datos que la ley obliga a conservar (boletas).' );
 		}
 	}
-	$volver = wp_get_referer();
-	wp_safe_redirect( $volver ? $volver : wc_get_account_endpoint_url( 'privacidad' === $accion || false !== strpos( $accion, 'personal' ) ? 'privacidad' : 'mis-mascotas' ) );
+	// Se vuelve a la página desde donde se envió el formulario (el formulario se envía a su misma dirección).
+	$destinos = array( 'agregar_mascota' => 'mis-mascotas', 'quitar_mascota' => 'mis-mascotas', 'peluqueria' => 'peluqueria' );
+	$respaldo = wc_get_account_endpoint_url( $destinos[ $accion ] ?? 'privacidad' );
+	wp_safe_redirect( wp_validate_redirect( wp_get_raw_referer(), $respaldo ) );
 	exit;
 } );
 
@@ -160,6 +185,36 @@ add_action( 'woocommerce_account_suscripciones_endpoint', function () {
 		printf( '<tr><td>%s</td><td>%s</td><td>%s</td><td><span class="pf-chip">Activa</span></td></tr>', esc_html( $f[0] ), esc_html( $f[1] ), esc_html( $f[2] ? $f[2]->date_i18n( 'j \d\e F' ) : '' ) );
 	}
 	echo '</tbody></table>';
+} );
+
+/* ------------------------------------------------------------------ peluquería */
+
+add_action( 'woocommerce_account_peluqueria_endpoint', function () {
+	$uid   = get_current_user_id();
+	$horas = array_values( array_filter( (array) get_user_meta( $uid, 'patitas_peluqueria', true ) ) );
+	echo '<p>Peluquería canina y felina en la tienda de Copiapó. Lunes a sábado, de 10:00 a 18:00.</p>';
+	if ( $horas ) {
+		echo '<div class="pf-bloque"><div class="pf-bloque-cab"><h3>Tus horas</h3></div><table class="pf-tabla-pedidos"><thead><tr><th>Mascota</th><th>Servicio</th><th>Fecha</th><th>Hora</th><th>Estado</th></tr></thead><tbody>';
+		foreach ( $horas as $h ) {
+			printf( '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td><span class="pf-estado pf-estado-ambar">Por confirmar</span></td></tr>',
+				esc_html( $h['mascota'] ), esc_html( $h['servicio'] ), esc_html( date_i18n( 'j \d\e F', strtotime( $h['fecha'] ) ) ), esc_html( $h['hora'] ) );
+		}
+		echo '</tbody></table></div>';
+	}
+	?>
+	<div class="pf-bloque">
+		<div class="pf-bloque-cab"><h3>Agendar hora</h3></div>
+		<form method="post" class="pf-form pf-form-peluqueria">
+			<?php wp_nonce_field( 'patitas_cuenta' ); ?>
+			<input type="hidden" name="patitas_accion" value="peluqueria">
+			<p><label>Mascota <select name="mascota"><?php foreach ( patitas_mascotas( $uid ) as $m ) : ?><option><?php echo esc_html( $m['nombre'] ); ?></option><?php endforeach; ?></select></label>
+			<label>Servicio <select name="servicio"><?php foreach ( PATITAS_SERVICIOS as $s => $precio ) : ?><option value="<?php echo esc_attr( $s ); ?>"><?php echo esc_html( $s . ' · desde ' . patitas_clp( $precio ) ); ?></option><?php endforeach; ?></select></label></p>
+			<p><label>Fecha <input type="date" name="fecha" required min="<?php echo esc_attr( wp_date( 'Y-m-d', time() + DAY_IN_SECONDS ) ); ?>" value="<?php echo esc_attr( wp_date( 'Y-m-d', time() + 2 * DAY_IN_SECONDS ) ); ?>"></label>
+			<label>Hora <select name="hora"><?php foreach ( array( '10:00', '11:30', '13:00', '15:00', '16:30' ) as $h ) : ?><option><?php echo esc_html( $h ); ?></option><?php endforeach; ?></select></label></p>
+			<p><button type="submit" class="button">Solicitar hora</button></p>
+		</form>
+	</div>
+	<?php
 } );
 
 /* ------------------------------------------------------------------ privacidad */

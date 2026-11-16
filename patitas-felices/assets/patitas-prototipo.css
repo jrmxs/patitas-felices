@@ -67,7 +67,8 @@
 #pf-despacho-lista li:last-child { border-bottom: 0; }
 .single-product .flex-control-thumbs { display: grid !important; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px !important; }
 .single-product .flex-control-thumbs li { width: auto !important; margin: 0 !important; float: none !important; }
-.single-product .flex-control-thumbs img { border-radius: 10px; border: 2px solid transparent; opacity: 1 !important; }
+.single-product .flex-control-thumbs::before, .single-product .flex-control-thumbs::after { display: none !important; }
+.single-product .flex-control-thumbs img { border-radius: 10px; border: 2px solid transparent; opacity: 1 !important; aspect-ratio: 1 / 1; object-fit: cover; }
 .single-product .flex-control-thumbs img.flex-active { border-color: var(--pf-teal); }
 .single-product .woocommerce-product-gallery { background: #fff; border: 1px solid var(--pf-linea); border-radius: var(--pf-r); padding: 14px; }
 .single-product .woocommerce-product-gallery__image img { border-radius: 12px; }

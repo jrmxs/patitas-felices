@@ -244,6 +244,17 @@ function patitas_instalar_paginas() {
 		. '<h2>Tus derechos</h2><p>Puedes acceder, rectificar, suprimir, oponerte y pedir la portabilidad de tus datos (Ley N.º 21.719) desde <strong>Mi cuenta › Privacidad</strong>, donde también puedes desactivar la personalización y los recordatorios.</p>'
 		. '<h2>Pagos</h2><p>Los pagos se procesan en las plataformas de Transbank o Mercado Pago; la tienda no almacena datos de tarjetas.</p>' );
 
+	patitas_pagina( 'Peluquería', 'peluqueria',
+		'<p>Peluquería canina y felina en nuestra tienda de Copiapó, con productos hipoalergénicos y personal capacitado.</p>'
+		. '<table><thead><tr><th>Servicio</th><th>Precio desde</th></tr></thead><tbody>'
+		. '<tr><td>Baño y secado (perro pequeño)</td><td>$12.990</td></tr>'
+		. '<tr><td>Baño y corte (perro mediano)</td><td>$19.990</td></tr>'
+		. '<tr><td>Deslanado (raza grande)</td><td>$24.990</td></tr>'
+		. '<tr><td>Baño felino</td><td>$16.990</td></tr>'
+		. '<tr><td>Corte de uñas</td><td>$4.990</td></tr></tbody></table>'
+		. '<p><strong>Agenda tu hora</strong> en Mi cuenta › Peluquería o por WhatsApp +56 9 0000 0000. Lunes a sábado, de 10:00 a 18:00.</p>'
+		. '<p><em>Servicios y precios ficticios para un prototipo académico.</em></p>' );
+
 	patitas_pagina( 'Despachos y retiro', 'despachos-y-retiro',
 		'<h2>Despacho el mismo día</h2><p>Copiapó, Caldera y Tierra Amarilla: compras pagadas antes de las 14:00 se entregan el mismo día. Costo $2.990; <strong>gratis sobre $40.000</strong>.</p>'
 		. '<h2>Retiro en tienda</h2><p>Av. Copayapu 1234, Copiapó. Listo en 2 horas, sin costo.</p>'
@@ -395,10 +406,10 @@ function patitas_instalar_catalogo() {
 
 	// Galería: fotos de la comunidad como imágenes adicionales de cada ficha (miniaturas bajo la foto principal).
 	$fotos   = array();
-	foreach ( array( 1, 2, 3, 4 ) as $n ) {
+	foreach ( array( 1, 2, 3, 4, 5, 6 ) as $n ) {
 		$fotos[ $n ] = patitas_adjuntar( 'comunidad-' . $n . '.png', 'Mascota de la comunidad #PatitasFelicesCPY' );
 	}
-	$galeria = array( 'Perros' => array( $fotos[1], $fotos[3] ), 'Gatos' => array( $fotos[2], $fotos[4] ) );
+	$galeria = array( 'Perros' => array( $fotos[1], $fotos[3], $fotos[5] ), 'Gatos' => array( $fotos[2], $fotos[4], $fotos[6] ) );
 
 	$mapa        = array();
 	$variaciones = array();
@@ -904,7 +915,7 @@ function patitas_instalar_apariencia() {
 				'menu-item-status' => 'publish',
 			) );
 		}
-		foreach ( array( 'Alimento', 'Arena', 'Snacks', 'Farmacia', 'Accesorios', 'Higiene', 'Kits' ) as $c ) {
+		foreach ( array( 'Alimento', 'Arena', 'Snacks', 'Accesorios', 'Higiene' ) as $c ) {
 			$t = get_term_by( 'name', $c, 'product_cat' );
 			if ( $t ) {
 				wp_update_nav_menu_item( $menu_id, 0, array(
@@ -915,6 +926,16 @@ function patitas_instalar_apariencia() {
 					'menu-item-status'    => 'publish',
 				) );
 			}
+		}
+		$peluqueria = get_page_by_path( 'peluqueria' );
+		if ( $peluqueria ) {
+			wp_update_nav_menu_item( $menu_id, 0, array(
+				'menu-item-title'     => 'Peluquería',
+				'menu-item-object'    => 'page',
+				'menu-item-object-id' => $peluqueria->ID,
+				'menu-item-type'      => 'post_type',
+				'menu-item-status'    => 'publish',
+			) );
 		}
 		$oferta = get_term_by( 'name', 'Oferta', 'product_tag' );
 		if ( $oferta ) {

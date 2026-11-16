@@ -53,7 +53,8 @@ def imagenes_y_datos(con_img=True):
                 svg = pg.evaluate("id => art(byId(id), 600)", prod["id"])
                 png(svg, os.path.join(IMG, "productos", prod["id"] + ".png"), 600, 600)
             ugc = [["dog", "#FFE2B8", "#C98A4B"], ["cat", "#E3F0EE", "#6B6B6B"],
-                   ["dog", "#FBE6F1", "#3B3B3B"], ["cat", "#FFF1D6", "#E9853A"]]
+                   ["dog", "#FBE6F1", "#3B3B3B"], ["cat", "#FFF1D6", "#E9853A"],
+                   ["dog", "#E3F0EE", "#B5651D"], ["cat", "#FBE6F1", "#3B3B3B"]]
             for i, (k, bg, fur) in enumerate(ugc, 1):
                 svg = pg.evaluate("a => pet(a[0], a[1], a[2], 480, desierto)", [k, bg, fur])
                 png(svg, os.path.join(IMG, f"comunidad-{i}.png"), 480, 480)

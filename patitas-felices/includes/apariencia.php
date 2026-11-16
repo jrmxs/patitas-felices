@@ -206,7 +206,7 @@ add_filter( 'woocommerce_account_menu_items', function ( $items ) {
 }, 20 );
 
 add_action( 'init', function () {
-	add_rewrite_endpoint( 'huellitas', EP_ROOT | EP_PAGES );
+	add_rewrite_endpoint( 'huellitas', EP_PAGES );
 } );
 add_filter( 'woocommerce_get_query_vars', function ( $vars ) {
 	$vars['huellitas'] = 'huellitas';

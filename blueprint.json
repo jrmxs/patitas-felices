@@ -18,7 +18,7 @@
       "step": "importWordPressFiles",
       "wordPressFilesZip": {
         "resource": "url",
-        "url": "https://raw.githubusercontent.com/jrmxs/patitas-felices/main/sitio.zip?v=20261116122416"
+        "url": "https://raw.githubusercontent.com/jrmxs/patitas-felices/main/sitio.zip?v=20261116123536"
       }
     },
     {
