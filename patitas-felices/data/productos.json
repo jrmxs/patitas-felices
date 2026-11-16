@@ -1,0 +1,860 @@
+[
+ {
+  "id": "p1",
+  "name": "Nutrican Adulto Raza Grande",
+  "brand": "Nutrican",
+  "sp": "Perros",
+  "cat": "Alimento seco",
+  "stage": "Adulto",
+  "v": {
+   "3 kg": 12990,
+   "8 kg": 27990,
+   "15 kg": 42990
+  },
+  "def": "15 kg",
+  "stock": 12,
+  "r": 4.8,
+  "n": 126,
+  "tag": "Más vendido",
+  "need": [
+   "Raza grande"
+  ]
+ },
+ {
+  "id": "p2",
+  "name": "Huella Natural Cachorro Pollo y Arroz",
+  "brand": "Huella Natural",
+  "sp": "Perros",
+  "cat": "Alimento seco",
+  "stage": "Cachorro",
+  "v": {
+   "3 kg": 14990,
+   "10 kg": 36990
+  },
+  "def": "10 kg",
+  "stock": 7,
+  "r": 4.7,
+  "n": 58
+ },
+ {
+  "id": "p3",
+  "name": "Andes Pet Senior Light",
+  "brand": "Andes Pet",
+  "sp": "Perros",
+  "cat": "Alimento seco",
+  "stage": "Senior",
+  "v": {
+   "3 kg": 13490,
+   "12 kg": 39990
+  },
+  "def": "12 kg",
+  "stock": 4,
+  "r": 4.6,
+  "n": 31,
+  "need": [
+   "Control de peso"
+  ]
+ },
+ {
+  "id": "p4",
+  "name": "Felina Gold Adulto Salmón",
+  "brand": "Felina Gold",
+  "sp": "Gatos",
+  "cat": "Alimento seco",
+  "stage": "Adulto",
+  "v": {
+   "1,5 kg": 9990,
+   "7,5 kg": 34990
+  },
+  "def": "7,5 kg",
+  "stock": 15,
+  "r": 4.9,
+  "n": 88,
+  "tag": "Nuevo",
+  "need": [
+   "Hipoalergénico"
+  ]
+ },
+ {
+  "id": "p5",
+  "name": "MiauMix Húmedo Pollo, pack 12 × 85 g",
+  "brand": "MiauMix",
+  "sp": "Gatos",
+  "cat": "Alimento húmedo",
+  "stage": "Adulto",
+  "v": {
+   "Pack 12": 10990
+  },
+  "def": "Pack 12",
+  "stock": 30,
+  "r": 4.7,
+  "n": 64
+ },
+ {
+  "id": "p6",
+  "name": "Arena Aglomerante Desierto",
+  "brand": "Huella Natural",
+  "sp": "Gatos",
+  "cat": "Arena",
+  "stage": "Todas",
+  "v": {
+   "10 kg": 8990,
+   "20 kg": 15990
+  },
+  "def": "10 kg",
+  "stock": 40,
+  "r": 4.5,
+  "n": 112,
+  "tag": "Oferta"
+ },
+ {
+  "id": "p7",
+  "name": "Snack Dental Huesitos 200 g",
+  "brand": "Nutrican",
+  "sp": "Perros",
+  "cat": "Snacks",
+  "stage": "Adulto",
+  "v": {
+   "200 g": 4990
+  },
+  "def": "200 g",
+  "stock": 25,
+  "r": 4.6,
+  "n": 47
+ },
+ {
+  "id": "p8",
+  "name": "Pipeta Antipulgas Perro 10 a 20 kg",
+  "brand": "VetAndes",
+  "sp": "Perros",
+  "cat": "Farmacia",
+  "stage": "Adulto",
+  "v": {
+   "1 unidad": 11990
+  },
+  "def": "1 unidad",
+  "stock": 18,
+  "r": 4.8,
+  "n": 73
+ },
+ {
+  "id": "p9",
+  "name": "Pelota Rebote Resistente",
+  "brand": "Juguetón",
+  "sp": "Perros",
+  "cat": "Accesorios",
+  "stage": "Todas",
+  "v": {
+   "Talla M": 5490
+  },
+  "def": "Talla M",
+  "stock": 22,
+  "r": 4.4,
+  "n": 39
+ },
+ {
+  "id": "p10",
+  "name": "Cama Oasis Acolchada",
+  "brand": "Juguetón",
+  "sp": "Perros",
+  "cat": "Accesorios",
+  "stage": "Todas",
+  "v": {
+   "Talla M": 22990,
+   "Talla L": 29990
+  },
+  "def": "Talla L",
+  "stock": 5,
+  "r": 4.7,
+  "n": 21
+ },
+ {
+  "id": "p11",
+  "name": "Correa Reflectante 1,5 m",
+  "brand": "Juguetón",
+  "sp": "Perros",
+  "cat": "Accesorios",
+  "stage": "Todas",
+  "v": {
+   "Única": 8490
+  },
+  "def": "Única",
+  "stock": 14,
+  "r": 4.5,
+  "n": 18
+ },
+ {
+  "id": "p12",
+  "name": "Shampoo Avena Hipoalergénico 500 ml",
+  "brand": "VetAndes",
+  "sp": "Perros",
+  "cat": "Higiene",
+  "stage": "Todas",
+  "v": {
+   "500 ml": 6990
+  },
+  "def": "500 ml",
+  "stock": 16,
+  "r": 4.6,
+  "n": 26,
+  "need": [
+   "Hipoalergénico"
+  ]
+ },
+ {
+  "id": "p13",
+  "name": "Rascador Torre Atacama 80 cm",
+  "brand": "Juguetón",
+  "sp": "Gatos",
+  "cat": "Accesorios",
+  "stage": "Todas",
+  "v": {
+   "80 cm": 34990
+  },
+  "def": "80 cm",
+  "stock": 3,
+  "r": 4.8,
+  "n": 15
+ },
+ {
+  "id": "p14",
+  "name": "Kit Cachorro Feliz",
+  "brand": "Patitas Felices",
+  "sp": "Perros",
+  "cat": "Kits",
+  "stage": "Cachorro",
+  "v": {
+   "Kit": 24990
+  },
+  "def": "Kit",
+  "stock": 9,
+  "r": 4.9,
+  "n": 34,
+  "tag": "Recomendado"
+ },
+ {
+  "id": "p15",
+  "name": "Nutrican Cachorro Raza Grande",
+  "brand": "Nutrican",
+  "sp": "Perros",
+  "cat": "Alimento seco",
+  "stage": "Cachorro",
+  "v": {
+   "3 kg": 13990,
+   "15 kg": 45990
+  },
+  "def": "15 kg",
+  "stock": 8,
+  "r": 4.7,
+  "n": 44,
+  "need": [
+   "Raza grande"
+  ]
+ },
+ {
+  "id": "p16",
+  "name": "Nutrican Light Control de Peso",
+  "brand": "Nutrican",
+  "sp": "Perros",
+  "cat": "Alimento seco",
+  "stage": "Adulto",
+  "v": {
+   "3 kg": 13490,
+   "12 kg": 38990
+  },
+  "def": "12 kg",
+  "stock": 10,
+  "r": 4.5,
+  "n": 37,
+  "need": [
+   "Control de peso"
+  ]
+ },
+ {
+  "id": "p17",
+  "name": "Huella Natural Adulto Cordero Hipoalergénico",
+  "brand": "Huella Natural",
+  "sp": "Perros",
+  "cat": "Alimento seco",
+  "stage": "Adulto",
+  "v": {
+   "3 kg": 15990,
+   "10 kg": 39990
+  },
+  "def": "10 kg",
+  "stock": 6,
+  "r": 4.8,
+  "n": 52,
+  "need": [
+   "Hipoalergénico"
+  ]
+ },
+ {
+  "id": "p18",
+  "name": "Andes Pet Adulto Raza Pequeña",
+  "brand": "Andes Pet",
+  "sp": "Perros",
+  "cat": "Alimento seco",
+  "stage": "Adulto",
+  "v": {
+   "1 kg": 5990,
+   "3 kg": 11990,
+   "7 kg": 24990
+  },
+  "def": "3 kg",
+  "stock": 20,
+  "r": 4.6,
+  "n": 61,
+  "tag": "Oferta"
+ },
+ {
+  "id": "p19",
+  "name": "Andes Pet Senior Raza Grande",
+  "brand": "Andes Pet",
+  "sp": "Perros",
+  "cat": "Alimento seco",
+  "stage": "Senior",
+  "v": {
+   "3 kg": 14490,
+   "15 kg": 46990
+  },
+  "def": "15 kg",
+  "stock": 0,
+  "r": 4.6,
+  "n": 19,
+  "need": [
+   "Raza grande"
+  ]
+ },
+ {
+  "id": "p20",
+  "name": "Huella Natural Senior Articulaciones",
+  "brand": "Huella Natural",
+  "sp": "Perros",
+  "cat": "Alimento seco",
+  "stage": "Senior",
+  "v": {
+   "3 kg": 15490,
+   "10 kg": 41990
+  },
+  "def": "10 kg",
+  "stock": 5,
+  "r": 4.7,
+  "n": 23
+ },
+ {
+  "id": "p21",
+  "name": "Felina Gold Kitten",
+  "brand": "Felina Gold",
+  "sp": "Gatos",
+  "cat": "Alimento seco",
+  "stage": "Cachorro",
+  "v": {
+   "1,5 kg": 10490,
+   "7,5 kg": 36990
+  },
+  "def": "1,5 kg",
+  "stock": 11,
+  "r": 4.9,
+  "n": 40
+ },
+ {
+  "id": "p22",
+  "name": "Felina Gold Senior 7+",
+  "brand": "Felina Gold",
+  "sp": "Gatos",
+  "cat": "Alimento seco",
+  "stage": "Senior",
+  "v": {
+   "1,5 kg": 10990,
+   "7,5 kg": 37990
+  },
+  "def": "7,5 kg",
+  "stock": 6,
+  "r": 4.7,
+  "n": 22,
+  "need": [
+   "Control de peso"
+  ]
+ },
+ {
+  "id": "p23",
+  "name": "Andes Pet Gato Esterilizado",
+  "brand": "Andes Pet",
+  "sp": "Gatos",
+  "cat": "Alimento seco",
+  "stage": "Adulto",
+  "v": {
+   "3 kg": 12990,
+   "10 kg": 34990
+  },
+  "def": "10 kg",
+  "stock": 14,
+  "r": 4.6,
+  "n": 57,
+  "need": [
+   "Control de peso"
+  ]
+ },
+ {
+  "id": "p24",
+  "name": "Huella Natural Gato Pavo sin Granos",
+  "brand": "Huella Natural",
+  "sp": "Gatos",
+  "cat": "Alimento seco",
+  "stage": "Adulto",
+  "v": {
+   "2 kg": 11990,
+   "7 kg": 32990
+  },
+  "def": "2 kg",
+  "stock": 9,
+  "r": 4.8,
+  "n": 33,
+  "need": [
+   "Hipoalergénico"
+  ]
+ },
+ {
+  "id": "p25",
+  "name": "MiauMix Húmedo Kitten, pack 12 × 85 g",
+  "brand": "MiauMix",
+  "sp": "Gatos",
+  "cat": "Alimento húmedo",
+  "stage": "Cachorro",
+  "v": {
+   "Pack 12": 11490
+  },
+  "def": "Pack 12",
+  "stock": 18,
+  "r": 4.8,
+  "n": 29
+ },
+ {
+  "id": "p26",
+  "name": "Nutrican Gato Senior Húmedo, pack 12 × 85 g",
+  "brand": "Nutrican",
+  "sp": "Gatos",
+  "cat": "Alimento húmedo",
+  "stage": "Senior",
+  "v": {
+   "Pack 12": 11990
+  },
+  "def": "Pack 12",
+  "stock": 12,
+  "r": 4.6,
+  "n": 14
+ },
+ {
+  "id": "p27",
+  "name": "Arena Sílica Antiolor",
+  "brand": "Andes Pet",
+  "sp": "Gatos",
+  "cat": "Arena",
+  "stage": "Todas",
+  "v": {
+   "4 kg": 9490
+  },
+  "def": "4 kg",
+  "stock": 0,
+  "r": 4.4,
+  "n": 41
+ },
+ {
+  "id": "p28",
+  "name": "Arena Vegetal Biodegradable",
+  "brand": "Huella Natural",
+  "sp": "Gatos",
+  "cat": "Arena",
+  "stage": "Todas",
+  "v": {
+   "7 kg": 10990
+  },
+  "def": "7 kg",
+  "stock": 16,
+  "r": 4.7,
+  "n": 36,
+  "tag": "Nuevo"
+ },
+ {
+  "id": "p29",
+  "name": "Snack Cremoso de Atún, pack 4",
+  "brand": "MiauMix",
+  "sp": "Gatos",
+  "cat": "Snacks",
+  "stage": "Adulto",
+  "v": {
+   "Pack 4": 3990
+  },
+  "def": "Pack 4",
+  "stock": 35,
+  "r": 4.9,
+  "n": 95,
+  "tag": "Oferta"
+ },
+ {
+  "id": "p30",
+  "name": "Snack de Entrenamiento Cachorro 150 g",
+  "brand": "Nutrican",
+  "sp": "Perros",
+  "cat": "Snacks",
+  "stage": "Cachorro",
+  "v": {
+   "150 g": 3990
+  },
+  "def": "150 g",
+  "stock": 21,
+  "r": 4.7,
+  "n": 28
+ },
+ {
+  "id": "p31",
+  "name": "Snack Gato Senior Articulaciones 60 g",
+  "brand": "Felina Gold",
+  "sp": "Gatos",
+  "cat": "Snacks",
+  "stage": "Senior",
+  "v": {
+   "60 g": 3490
+  },
+  "def": "60 g",
+  "stock": 13,
+  "r": 4.5,
+  "n": 11
+ },
+ {
+  "id": "p32",
+  "name": "Pipeta Antipulgas Gato hasta 8 kg",
+  "brand": "VetAndes",
+  "sp": "Gatos",
+  "cat": "Farmacia",
+  "stage": "Adulto",
+  "v": {
+   "1 unidad": 9990
+  },
+  "def": "1 unidad",
+  "stock": 15,
+  "r": 4.8,
+  "n": 49
+ },
+ {
+  "id": "p33",
+  "name": "Antiparasitario Interno Perro, 2 comprimidos",
+  "brand": "VetAndes",
+  "sp": "Perros",
+  "cat": "Farmacia",
+  "stage": "Adulto",
+  "v": {
+   "2 comprimidos": 6990
+  },
+  "def": "2 comprimidos",
+  "stock": 24,
+  "r": 4.7,
+  "n": 38
+ },
+ {
+  "id": "p34",
+  "name": "Ratones con Catnip, pack 3",
+  "brand": "Juguetón",
+  "sp": "Gatos",
+  "cat": "Accesorios",
+  "stage": "Todas",
+  "v": {
+   "Pack 3": 4490
+  },
+  "def": "Pack 3",
+  "stock": 30,
+  "r": 4.6,
+  "n": 52
+ },
+ {
+  "id": "p35",
+  "name": "Cama Iglú para Gatos",
+  "brand": "Juguetón",
+  "sp": "Gatos",
+  "cat": "Accesorios",
+  "stage": "Todas",
+  "v": {
+   "Única": 19990
+  },
+  "def": "Única",
+  "stock": 4,
+  "r": 4.8,
+  "n": 17
+ },
+ {
+  "id": "p36",
+  "name": "Shampoo en Seco para Gatos 200 ml",
+  "brand": "VetAndes",
+  "sp": "Gatos",
+  "cat": "Higiene",
+  "stage": "Todas",
+  "v": {
+   "200 ml": 7490
+  },
+  "def": "200 ml",
+  "stock": 10,
+  "r": 4.4,
+  "n": 12,
+  "need": [
+   "Hipoalergénico"
+  ]
+ },
+ {
+  "id": "p37",
+  "name": "Cepillo Deslanador",
+  "brand": "Juguetón",
+  "sp": "Perros",
+  "cat": "Higiene",
+  "stage": "Todas",
+  "v": {
+   "Talla M": 9990
+  },
+  "def": "Talla M",
+  "stock": 12,
+  "r": 4.7,
+  "n": 33
+ },
+ {
+  "id": "p38",
+  "name": "Toallitas de Limpieza para Gatos, 50 un.",
+  "brand": "VetAndes",
+  "sp": "Gatos",
+  "cat": "Higiene",
+  "stage": "Todas",
+  "v": {
+   "50 un.": 3990
+  },
+  "def": "50 un.",
+  "stock": 26,
+  "r": 4.5,
+  "n": 20,
+  "tag": "Oferta"
+ },
+ {
+  "id": "p39",
+  "name": "Bolsas Sanitarias Biodegradables, 120 un.",
+  "brand": "Huella Natural",
+  "sp": "Perros",
+  "cat": "Higiene",
+  "stage": "Todas",
+  "v": {
+   "120 un.": 4990
+  },
+  "def": "120 un.",
+  "stock": 40,
+  "r": 4.8,
+  "n": 71
+ },
+ {
+  "id": "p40",
+  "name": "Kit Gatito Feliz",
+  "brand": "Patitas Felices",
+  "sp": "Gatos",
+  "cat": "Kits",
+  "stage": "Cachorro",
+  "v": {
+   "Kit": 21990
+  },
+  "def": "Kit",
+  "stock": 7,
+  "r": 4.9,
+  "n": 18
+ },
+ {
+  "id": "p41",
+  "name": "Kit Paseo Seguro",
+  "brand": "Patitas Felices",
+  "sp": "Perros",
+  "cat": "Kits",
+  "stage": "Todas",
+  "v": {
+   "Kit": 15990
+  },
+  "def": "Kit",
+  "stock": 10,
+  "r": 4.6,
+  "n": 12
+ },
+ {
+  "id": "p42",
+  "name": "Snack Crujiente con Hierba Gatera 50 g",
+  "brand": "MiauMix",
+  "sp": "Gatos",
+  "cat": "Snacks",
+  "stage": "Adulto",
+  "v": {
+   "50 g": 2990
+  },
+  "def": "50 g",
+  "stock": 28,
+  "r": 4.6,
+  "n": 39
+ },
+ {
+  "id": "p43",
+  "name": "Antiparasitario Interno Gato, 2 comprimidos",
+  "brand": "VetAndes",
+  "sp": "Gatos",
+  "cat": "Farmacia",
+  "stage": "Adulto",
+  "v": {
+   "2 comprimidos": 5990
+  },
+  "def": "2 comprimidos",
+  "stock": 17,
+  "r": 4.6,
+  "n": 21
+ },
+ {
+  "id": "p44",
+  "name": "Collar Antipulgas Gato",
+  "brand": "VetAndes",
+  "sp": "Gatos",
+  "cat": "Farmacia",
+  "stage": "Adulto",
+  "v": {
+   "Única": 8990
+  },
+  "def": "Única",
+  "stock": 9,
+  "r": 4.3,
+  "n": 16
+ },
+ {
+  "id": "p45",
+  "name": "Cepillo Quitapelo para Gatos",
+  "brand": "Juguetón",
+  "sp": "Gatos",
+  "cat": "Higiene",
+  "stage": "Todas",
+  "v": {
+   "Única": 6990
+  },
+  "def": "Única",
+  "stock": 14,
+  "r": 4.7,
+  "n": 27
+ },
+ {
+  "id": "p46",
+  "name": "Kit Arenero Completo",
+  "brand": "Patitas Felices",
+  "sp": "Gatos",
+  "cat": "Kits",
+  "stage": "Todas",
+  "v": {
+   "Kit": 19990
+  },
+  "def": "Kit",
+  "stock": 6,
+  "r": 4.8,
+  "n": 14
+ },
+ {
+  "id": "p47",
+  "name": "Kit Juegos Felinos",
+  "brand": "Patitas Felices",
+  "sp": "Gatos",
+  "cat": "Kits",
+  "stage": "Todas",
+  "v": {
+   "Kit": 12990
+  },
+  "def": "Kit",
+  "stock": 8,
+  "r": 4.7,
+  "n": 10
+ },
+ {
+  "id": "p48",
+  "name": "Snack Tiras de Pollo 100 g",
+  "brand": "Huella Natural",
+  "sp": "Perros",
+  "cat": "Snacks",
+  "stage": "Adulto",
+  "v": {
+   "100 g": 4490
+  },
+  "def": "100 g",
+  "stock": 19,
+  "r": 4.8,
+  "n": 58
+ },
+ {
+  "id": "p49",
+  "name": "Collar Antipulgas Perro",
+  "brand": "VetAndes",
+  "sp": "Perros",
+  "cat": "Farmacia",
+  "stage": "Adulto",
+  "v": {
+   "Talla M": 10990,
+   "Talla L": 12990
+  },
+  "def": "Talla L",
+  "stock": 11,
+  "r": 4.4,
+  "n": 24
+ },
+ {
+  "id": "p50",
+  "name": "Kit Baño en Casa",
+  "brand": "Patitas Felices",
+  "sp": "Perros",
+  "cat": "Kits",
+  "stage": "Todas",
+  "v": {
+   "Kit": 17990
+  },
+  "def": "Kit",
+  "stock": 7,
+  "r": 4.6,
+  "n": 9
+ },
+ {
+  "id": "p51",
+  "name": "Nutrican Húmedo Perro Adulto, pack 6 × 400 g",
+  "brand": "Nutrican",
+  "sp": "Perros",
+  "cat": "Alimento húmedo",
+  "stage": "Adulto",
+  "v": {
+   "Pack 6": 12990
+  },
+  "def": "Pack 6",
+  "stock": 15,
+  "r": 4.6,
+  "n": 26
+ },
+ {
+  "id": "p52",
+  "name": "Huella Natural Húmedo Cachorro, pack 6 × 400 g",
+  "brand": "Huella Natural",
+  "sp": "Perros",
+  "cat": "Alimento húmedo",
+  "stage": "Cachorro",
+  "v": {
+   "Pack 6": 13990
+  },
+  "def": "Pack 6",
+  "stock": 10,
+  "r": 4.7,
+  "n": 18
+ },
+ {
+  "id": "p53",
+  "name": "Andes Pet Húmedo Senior, pack 6 × 400 g",
+  "brand": "Andes Pet",
+  "sp": "Perros",
+  "cat": "Alimento húmedo",
+  "stage": "Senior",
+  "v": {
+   "Pack 6": 12490
+  },
+  "def": "Pack 6",
+  "stock": 8,
+  "r": 4.5,
+  "n": 12
+ }
+]

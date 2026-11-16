@@ -1,0 +1,6 @@
+.pf-admin h2 { margin-top: 2em; border-top: 1px solid #dcdcde; padding-top: 1em; }
+.pf-admin .pf-tabla { max-width: 1100px; margin: 10px 0 16px; }
+.pf-admin .pf-tabla th { font-weight: 600; }
+.pf-admin .pf-elegido { background: #e3f0ee; font-weight: 700; }
+.pf-admin .pf-rojo { color: #b32d2e; font-weight: 600; }
+.pf-admin .pf-ambar { color: #996800; font-weight: 600; }
