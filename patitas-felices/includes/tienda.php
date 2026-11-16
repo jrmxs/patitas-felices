@@ -11,6 +11,9 @@ add_action( 'wp_enqueue_scripts', function () {
 	wp_enqueue_style( 'patitas-fuentes', 'https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap', array(), null );
 	wp_enqueue_style( 'patitas', PATITAS_URL . 'assets/patitas.css', array(), PATITAS_VER );
 	wp_enqueue_script( 'patitas', PATITAS_URL . 'assets/patitas.js', array(), PATITAS_VER, true );
+	// El resumen del carrito de la cabecera se calcula en el servidor en cada página; la copia guardada en el
+	// navegador (cart fragments) queda desactualizada en Playground, que maneja las cookies por su cuenta.
+	wp_dequeue_script( 'wc-cart-fragments' );
 }, 99 );
 
 // Las imágenes del catálogo se sirven tal cual (sin generar miniaturas al vuelo).

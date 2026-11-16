@@ -7,8 +7,8 @@ Es un proyecto académico (INACAP, E-Commerce, Evaluación N.º 3): los datos, m
 
 **[Abrir en WordPress Playground](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/jrmxs/patitas-felices/main/blueprint.json)**
 
-WordPress Playground ejecuta WordPress dentro del navegador. La primera carga tarda 1 a 2 minutos porque instala
-WooCommerce, el tema y el plugin, y crea el catálogo y los datos de ejemplo. Cada visita parte con la tienda limpia.
+WordPress Playground ejecuta WordPress dentro del navegador. La tienda abre en unos 20 a 40 segundos, con la sesión
+del cliente demo iniciada. Cada visita parte con la tienda limpia y las fechas de los pedidos se ajustan al día actual.
 
 | Usuario | Contraseña | Para qué |
 |---|---|---|
@@ -32,20 +32,27 @@ También se puede cambiar de usuario con el botón **Guía del prototipo** (esqu
   - Recálculo diario con WP-Cron.
 - **Marketing social**: galería #PatitasFelicesCPY con «Comprar el look», botones para compartir, campaña y programa «Invita a un amigo».
 
-## Estructura
+## Cómo está construido
+
+| Archivo | Qué es |
+|---|---|
+| `blueprint.json` | Receta principal de Playground: importa la copia lista del sitio (`sitio.zip`) y actualiza las fechas. |
+| `sitio.zip` | Copia de `wp-content` (WooCommerce, Storefront, idioma es_CL, plugin, imágenes y base de datos) generada con `herramientas/instantanea.py`. |
+| `blueprint-desde-cero.json` | Alternativa: instala WooCommerce y Storefront desde WordPress.org y construye toda la tienda con el plugin (tarda 2 a 3 minutos). |
+| `patitas-felices/` | Código fuente del plugin (`patitas-felices.zip` es el mismo plugin empaquetado). |
+| `build.py` | Genera imágenes, datos, zip del plugin y blueprints a partir del prototipo HTML. |
+
+Archivos principales del plugin:
 
 ```
-blueprint.json          receta de Playground (instala WooCommerce, Storefront y el plugin)
-patitas-felices.zip     plugin empaquetado (lo descarga el blueprint)
-patitas-felices/        código fuente del plugin
-  includes/instalar.php     configuración de la tienda y datos de ejemplo
-  includes/tienda.php       portada, ficha, carrito, checkout y confirmación
-  includes/cuenta.php       Mi cuenta: mascotas, suscripciones y privacidad
-  includes/recomendador.php recomendador, recompra y K-means
-  includes/pagos.php        pasarelas simuladas
-  includes/admin.php        panel de ML para el administrador
-  includes/demo.php         guía del prototipo
-build.py                genera imágenes, datos, zip y blueprint desde el prototipo HTML
+includes/instalar.php      configuración de la tienda, datos de ejemplo y ajuste de fechas
+includes/tienda.php        portada, ficha, carrito, checkout y confirmación
+includes/cuenta.php        Mi cuenta: mascotas, suscripciones y privacidad
+includes/recomendador.php  recomendador, predicción de recompra y K-means
+includes/pagos.php         pasarelas simuladas
+includes/admin.php         panel de ML para el administrador
+includes/demo.php          guía del prototipo y cambio de usuario (solo en Playground)
 ```
 
-Para regenerar: `python build.py` (requiere Python con Playwright, Microsoft Edge y la carpeta `mockup` del prototipo HTML junto a esta carpeta).
+Para regenerar: `python build.py` y luego `python herramientas/instantanea.py` (requiere Python con Playwright,
+Microsoft Edge y la carpeta `mockup` del prototipo HTML junto a esta carpeta).
