@@ -60,11 +60,24 @@ function patitas_catalogo() {
 	$cat = array();
 	$ids = get_posts( array( 'post_type' => 'product', 'post_status' => 'publish', 'numberposts' => -1, 'fields' => 'ids' ) );
 	foreach ( $ids as $id ) {
-		$f = patitas_ficha( $id );
+		$f           = patitas_ficha( $id );
 		$f['ventas'] = (int) get_post_meta( $id, 'total_sales', true );
 		$f['stock']  = 'outofstock' !== get_post_meta( $id, '_stock_status', true );
 		$f['nombre'] = get_the_title( $id );
-		$cat[ $id ]  = $f;
+		$marca       = wp_get_post_terms( $id, 'pa_marca', array( 'fields' => 'names' ) );
+		$f['marca']  = ( $marca && ! is_wp_error( $marca ) ) ? $marca[0] : '';
+		$prod        = wc_get_product( $id );
+		$f['precio'] = $prod ? (float) patitas_precio_defecto( $prod ) : 0;
+		// Valores de cada faceta del catálogo (slugs, como en las URL de filtros de WooCommerce).
+		$etapas    = 'Todas' === $f['etapa'] ? array( 'Cachorro', 'Adulto', 'Senior' ) : array( $f['etapa'] );
+		$f['facetas'] = array(
+			'especie'   => array( sanitize_title( $f['especie'] ) ),
+			'categoria' => array( sanitize_title( $f['categoria'] ) ),
+			'etapa'     => array_map( 'sanitize_title', $etapas ),
+			'marca'     => $f['marca'] ? array( sanitize_title( $f['marca'] ) ) : array(),
+			'necesidad' => array_map( 'sanitize_title', (array) $f['necesidad'] ),
+		);
+		$cat[ $id ] = $f;
 	}
 	set_transient( 'patitas_catalogo', $cat, HOUR_IN_SECONDS );
 	return $cat;
@@ -158,6 +171,36 @@ function patitas_recomendar( $args = array() ) {
 		return $b['puntaje'] <=> $a['puntaje'];
 	} );
 	return array_slice( $salida, 0, (int) $args['limite'] );
+}
+
+/**
+ * Orden «Recomendados para ti» del catálogo: el mismo puntaje híbrido aplicado a todos los productos
+ * (sin excluir ninguno); los agotados quedan al final.
+ */
+function patitas_ranking( $user_id = 0 ) {
+	$catalogo = patitas_catalogo();
+	$mascotas = ( $user_id && patitas_pref( 'personalizacion', $user_id ) ) ? patitas_mascotas( $user_id ) : array();
+	$historia = ( $user_id && patitas_pref( 'personalizacion', $user_id ) ) ? patitas_historial( $user_id ) : array();
+	$co       = get_option( 'patitas_cocompras', array() );
+	$max_v    = max( 1, max( array_merge( array( 1 ), wp_list_pluck( $catalogo, 'ventas' ) ) ) );
+	$colab    = array();
+	foreach ( $catalogo as $id => $p ) {
+		$colab[ $id ] = 0;
+		foreach ( $historia as $h ) {
+			$colab[ $id ] += $co[ $h ][ $id ] ?? 0;
+		}
+	}
+	$max_c   = max( 1, max( array_merge( array( 0 ), $colab ) ) );
+	$puntaje = array();
+	foreach ( $catalogo as $id => $p ) {
+		$contenido = 0;
+		foreach ( $mascotas as $m ) {
+			$contenido = max( $contenido, patitas_similitud( $p, $m['especie'] ?? '', $m['etapa'] ?? '', (array) ( $m['necesidad'] ?? array() ) ) );
+		}
+		$puntaje[ $id ] = PATITAS_PESO_COLAB * $colab[ $id ] / $max_c + PATITAS_PESO_CONTENIDO * $contenido + PATITAS_PESO_POPULAR * $p['ventas'] / $max_v - ( $p['stock'] ? 0 : 10 );
+	}
+	arsort( $puntaje );
+	return array_keys( $puntaje );
 }
 
 /** Similitud de contenido (0 a 1): especie 0,5 + etapa 0,25 + necesidad 0,25. */

@@ -22,6 +22,7 @@ require_once PATITAS_DIR . 'includes/datos.php';
 require_once PATITAS_DIR . 'includes/recomendador.php';
 require_once PATITAS_DIR . 'includes/instalar.php';
 require_once PATITAS_DIR . 'includes/tienda.php';
+require_once PATITAS_DIR . 'includes/catalogo.php';
 require_once PATITAS_DIR . 'includes/cuenta.php';
 require_once PATITAS_DIR . 'includes/pagos.php';
 require_once PATITAS_DIR . 'includes/admin.php';

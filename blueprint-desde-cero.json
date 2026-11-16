@@ -42,7 +42,7 @@
       "step": "installPlugin",
       "pluginData": {
         "resource": "url",
-        "url": "https://raw.githubusercontent.com/jrmxs/patitas-felices/main/patitas-felices.zip?v=20261116111058"
+        "url": "https://raw.githubusercontent.com/jrmxs/patitas-felices/main/patitas-felices.zip?v=20261116115359"
       },
       "options": {
         "activate": true

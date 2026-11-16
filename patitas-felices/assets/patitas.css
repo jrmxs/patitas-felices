@@ -59,18 +59,82 @@ button, input[type=button], input[type=reset], input[type=submit], .button, .add
 .button.pf-btn-borde { background: transparent; border: 2px solid currentColor; color: var(--pf-teal); }
 .button.pf-btn-oscuro { background: var(--pf-tinta); color: #fff; }
 
-/* Tarjetas de producto */
-ul.products li.product { background: #fff; border: 1px solid var(--pf-linea); border-radius: var(--pf-r); padding: 0 0 14px; overflow: hidden; }
-ul.products li.product img { border-radius: 0; margin-bottom: .6em; }
-ul.products li.product .woocommerce-loop-product__title { font-size: 1rem; padding: 0 10px; color: var(--pf-tinta); }
-ul.products li.product .price { color: var(--pf-tinta); font-size: 1.15rem; font-weight: 800; }
-ul.products li.product .button { margin: 0 10px; }
-ul.products li.product .onsale, .single-product .onsale {
-	background: var(--pf-rosa); color: #fff; border: 0; border-radius: 999px; font-weight: 800; position: absolute; top: 10px; left: 10px; z-index: 2;
+/* Tarjetas de producto (mismas medidas que el prototipo) */
+ul.products li.product {
+	background: #fff; border: 1px solid var(--pf-linea); border-radius: var(--pf-r); padding: 0 0 12px; overflow: hidden;
+	text-align: left; position: relative; display: flex; flex-direction: column;
 }
-.pf-stock { display: inline-block; font-size: .8rem; font-weight: 800; color: var(--pf-ambar); margin: 0 0 6px; }
-.pf-stock.pf-agotado { color: var(--pf-rosa); }
+ul.products li.product .woocommerce-LoopProduct-link { display: flex; flex-direction: column; flex: 1; text-decoration: none; }
+ul.products li.product img { border-radius: 0; margin: 0 0 10px; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+ul.products li.product .pf-ideal, ul.products li.product .pf-marca, ul.products li.product .woocommerce-loop-product__title,
+ul.products li.product .pf-valoracion, ul.products li.product .price, ul.products li.product .pf-formato { margin-left: 12px; margin-right: 12px; }
+/* Grilla con filas de igual altura y botones alineados */
+.site-main ul.products, .pf-recos ul.products, .cross-sells ul.products { display: grid !important; gap: 16px; margin-left: 0; margin-right: 0; }
+.site-main ul.products::before, .site-main ul.products::after, .pf-recos ul.products::before, .pf-recos ul.products::after,
+.cross-sells ul.products::before, .cross-sells ul.products::after { display: none !important; }
+ul.products.columns-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+ul.products.columns-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+ul.products.columns-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.site-main ul.products li.product, .pf-recos ul.products li.product, .cross-sells ul.products li.product { width: auto !important; margin: 0 !important; float: none !important; clear: none !important; }
+@media (max-width: 767px) { ul.products.columns-4, ul.products.columns-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pf-valoracion { display: flex; align-items: center; gap: 6px; font-size: .78rem; color: var(--pf-tinta-2); }
+.pf-valoracion .star-rating { margin: 0 !important; font-size: .85em; float: none; }
+.pf-ideal { display: flex; align-items: center; gap: 5px; font-size: .74rem; font-weight: 800; color: var(--pf-rosa); margin-bottom: 2px; }
+.pf-marca { display: block; font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--pf-tinta-2); font-weight: 700; }
+ul.products li.product .woocommerce-loop-product__title { font-family: "Nunito Sans", system-ui, sans-serif; font-size: .95rem; font-weight: 700; line-height: 1.3; color: var(--pf-tinta); padding: 2px 0 4px; margin-bottom: 0; }
+ul.products li.product .star-rating { display: inline-block; margin: 0 4px 0 12px; font-size: .78em; vertical-align: middle; }
 .star-rating span::before, .star-rating::before { color: #E0A100; }
+.pf-nota-resenas { font-size: .78rem; color: var(--pf-tinta-2); vertical-align: middle; margin-left: 0 !important; }
+ul.products li.product .price { display: block; font-family: "Baloo 2", system-ui, sans-serif; color: var(--pf-tinta); font-size: 1.3rem; font-weight: 800; margin-top: auto; padding-top: 8px; }
+ul.products li.product .price { margin-bottom: 0 !important; line-height: 1.2; }
+ul.products li.product .price del { font-size: .85rem; color: var(--pf-tinta-2); font-weight: 600; opacity: .8; }
+ul.products li.product .price ins { text-decoration: none; }
+.pf-formato { display: block; font-size: .84rem; color: var(--pf-tinta-2); margin-bottom: 4px; }
+.pf-quedan { color: var(--pf-ambar); }
+.pf-agotado { color: var(--pf-rosa); }
+ul.products li.product .button {
+	display: block; margin: 6px 12px 0; text-align: center; background: #fff; color: var(--pf-teal); border: 1.5px solid var(--pf-teal);
+	border-radius: 10px; padding: .55em; font-size: .88rem; font-weight: 800;
+}
+ul.products li.product .button:hover { background: var(--pf-teal); color: #fff; }
+ul.products li.product .added_to_cart { display: block; text-align: center; margin: 6px 12px 0; font-size: .85rem; }
+.pf-tag { position: absolute; top: 10px; left: 10px; z-index: 2; border-radius: 999px; padding: 3px 10px; font-size: .76rem; font-weight: 800; }
+.pf-tag-rosa { background: var(--pf-rosa-2); color: var(--pf-rosa); }
+.pf-tag-teal { background: var(--pf-teal-2); color: var(--pf-teal); }
+.pf-tag-sol { background: #FFF1D6; color: #B26A00; }
+.single-product .onsale { background: var(--pf-rosa); color: #fff; border: 0; border-radius: 999px; font-weight: 800; }
+
+/* Catálogo: cabecera, filtros activos y orden */
+.post-type-archive-product .woocommerce-products-header, .tax-product_cat .woocommerce-products-header, .tax-product_tag .woocommerce-products-header { padding-bottom: 0; margin-bottom: 10px; text-align: left; }
+.woocommerce-products-header__title.page-title { font-size: 2.1rem; font-weight: 800; margin-bottom: 4px; }
+.pf-subtitulo { color: var(--pf-tinta-2); margin: 0 0 6px; }
+.storefront-sorting { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px !important; padding: 0; border: 0; }
+.storefront-sorting .woocommerce-ordering { order: 2; margin: 0 0 0 auto; display: flex; align-items: center; gap: 8px; }
+.storefront-sorting .woocommerce-ordering::before { content: "Ordenar por"; font-size: .9rem; color: var(--pf-tinta-2); }
+.storefront-sorting .woocommerce-ordering select { border: 1.5px solid var(--pf-linea); border-radius: 10px; padding: 7px 10px; background: #fff; }
+.pf-activos { order: 1; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.pf-chip-filtro { background: var(--pf-teal-2); color: var(--pf-teal); border-radius: 999px; padding: 4px 12px; font-size: .82rem; font-weight: 800; text-decoration: none; }
+.pf-chip-filtro:hover { background: var(--pf-teal); color: #fff; }
+.pf-total { font-size: .9rem; color: var(--pf-tinta-2); }
+.pf-limpiar { font-size: .85rem; font-weight: 700; }
+
+/* Panel de filtros (como el prototipo) */
+.pf-panel .pf-filtros { background: #fff; border: 1px solid var(--pf-linea); border-radius: var(--pf-r); padding: 16px 18px; display: flex; flex-direction: column; gap: 18px; }
+.pf-filtros fieldset { border: 0; padding: 0 !important; margin: 0 !important; display: flex; flex-direction: column; gap: 2px; background: none !important; }
+.pf-filtros legend { font-weight: 800; font-size: .95rem; color: var(--pf-tinta); margin: 0 0 6px !important; padding: 0 !important; background: none !important; }
+.storefront-sorting > :empty { display: none; }
+.pf-op { display: flex; align-items: center; gap: 10px; font-size: .92rem; color: var(--pf-tinta); text-decoration: none; padding: 4px 0; }
+.pf-op:hover { color: var(--pf-teal); }
+.pf-caja { width: 16px; height: 16px; border: 1.5px solid #8FA1A5; border-radius: 4px; flex: none; background: #fff; position: relative; }
+.pf-op-activa .pf-caja { background: #2B6FD6; border-color: #2B6FD6; }
+.pf-op-activa .pf-caja::after { content: ""; position: absolute; left: 4px; top: 0; width: 5px; height: 9px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.pf-n { margin-left: auto; font-size: .8rem; color: var(--pf-tinta-2); }
+.pf-op-vacia { color: #A9B6B9; cursor: default; }
+.pf-op-vacia .pf-caja { border-color: #D3DCDD; }
+.pf-rango { display: flex; gap: 8px; margin-bottom: 6px; }
+.pf-rango input { width: 100%; min-width: 0; border: 1.5px solid var(--pf-linea); border-radius: 8px; padding: 6px 8px; background: #fff; }
+.pf-op-check input { margin: 0; }
+.pf-aplicar { margin-top: 6px; }
 
 /* "¿Por qué veo esto?" */
 .pf-por-que { font-size: .82rem; margin: 6px 10px 0; text-align: left; }

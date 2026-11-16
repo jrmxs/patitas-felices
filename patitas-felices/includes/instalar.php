@@ -211,7 +211,7 @@ function patitas_instalar_paginas() {
 		WC_Install::create_pages();
 	}
 	$woo = array(
-		'shop'      => array( 'Tienda', 'tienda', null ),
+		'shop'      => array( 'Catálogo', 'tienda', null ),
 		'cart'      => array( 'Carrito', 'carrito', '[woocommerce_cart]' ),
 		'checkout'  => array( 'Finalizar compra', 'finalizar-compra', '[woocommerce_checkout]' ),
 		'myaccount' => array( 'Mi cuenta', 'mi-cuenta', '[woocommerce_my_account]' ),

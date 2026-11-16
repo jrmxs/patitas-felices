@@ -119,19 +119,6 @@ add_action( 'woocommerce_after_shop_loop_item', function () {
 	}
 }, 20 );
 
-// Aviso de stock bajo o agotado en los listados.
-add_action( 'woocommerce_after_shop_loop_item_title', function () {
-	global $product;
-	if ( ! $product ) {
-		return;
-	}
-	if ( ! $product->is_in_stock() ) {
-		echo '<span class="pf-stock pf-agotado">Agotado</span>';
-	} elseif ( $product->managing_stock() && $product->get_stock_quantity() <= 5 ) {
-		echo '<span class="pf-stock">¡Quedan ' . (int) $product->get_stock_quantity() . '!</span>';
-	}
-}, 15 );
-
 function patitas_url_cuenta( $endpoint = '' ) {
 	return $endpoint ? wc_get_account_endpoint_url( $endpoint ) : wc_get_page_permalink( 'myaccount' );
 }

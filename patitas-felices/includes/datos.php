@@ -83,6 +83,33 @@ function patitas_singular( $especie ) {
 	return 'Gatos' === $especie ? 'gato' : 'perro';
 }
 
+/** Variación del formato por defecto (15 kg, 7,5 kg...) de un producto variable; null si no aplica. */
+function patitas_variacion_defecto( $product ) {
+	if ( ! $product || ! $product->is_type( 'variable' ) ) {
+		return null;
+	}
+	$formato = $product->get_default_attributes()['formato'] ?? '';
+	$mapa    = get_option( 'patitas_variaciones', array() );
+	$codigo  = get_post_meta( $product->get_id(), '_patitas_id', true );
+	$vid     = $mapa[ $codigo ][ $formato ] ?? 0;
+	$v       = $vid ? wc_get_product( $vid ) : null;
+	return $v ? $v : null;
+}
+
+/** Precio del formato por defecto (el que se muestra en las tarjetas, como en el prototipo). */
+function patitas_precio_defecto( $product ) {
+	$v = patitas_variacion_defecto( $product );
+	return $v ? $v->get_price() : $product->get_price();
+}
+
+/** Formato por defecto en texto ("15 kg", "Pack 12"). */
+function patitas_formato_defecto( $product ) {
+	if ( $product->is_type( 'variable' ) ) {
+		return (string) ( $product->get_default_attributes()['formato'] ?? '' );
+	}
+	return (string) $product->get_attribute( 'formato' );
+}
+
 /** Formatea pesos chilenos. */
 function patitas_clp( $monto ) {
 	return '$' . number_format( (float) $monto, 0, ',', '.' );
