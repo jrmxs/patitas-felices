@@ -11,46 +11,19 @@
   "landingPage": "/",
   "preferredVersions": {
     "php": "8.3",
-    "wp": "latest"
+    "wp": "7.1"
   },
   "steps": [
     {
-      "step": "installPlugin",
-      "pluginData": {
-        "resource": "wordpress.org/plugins",
-        "slug": "woocommerce"
-      },
-      "options": {
-        "activate": true
-      }
-    },
-    {
-      "step": "installTheme",
-      "themeData": {
-        "resource": "wordpress.org/themes",
-        "slug": "storefront"
-      },
-      "options": {
-        "activate": true
-      }
-    },
-    {
-      "step": "setSiteLanguage",
-      "language": "es_CL"
-    },
-    {
-      "step": "installPlugin",
-      "pluginData": {
+      "step": "importWordPressFiles",
+      "wordPressFilesZip": {
         "resource": "url",
-        "url": "https://raw.githubusercontent.com/jrmxs/patitas-felices/main/patitas-felices.zip?v=20261116092617"
-      },
-      "options": {
-        "activate": true
+        "url": "https://raw.githubusercontent.com/jrmxs/patitas-felices/main/sitio.zip?v=20261116110056"
       }
     },
     {
       "step": "runPHP",
-      "code": "<?php require_once '/wordpress/wp-load.php'; patitas_instalar();"
+      "code": "<?php require_once '/wordpress/wp-load.php'; if ( function_exists( 'patitas_actualizar_fechas' ) ) { patitas_actualizar_fechas(); }"
     },
     {
       "step": "login",

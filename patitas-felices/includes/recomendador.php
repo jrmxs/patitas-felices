@@ -447,35 +447,45 @@ function patitas_segmentar() {
 	return array( 'k' => $mejor_k, 'silueta' => $prueba, 'grupos' => array_values( $grupos ), 'n' => count( $clientes ) );
 }
 
-/** Asigna nombre y acción a cada grupo según sus promedios RFM. */
+/**
+ * Asigna nombre y acción a cada grupo según sus promedios RFM:
+ * nuevos (≈1 pedido), en riesgo (más de 90 días sin comprar), leales (frecuencia alta) y ocasionales (el resto).
+ * Si dos grupos quedan con el mismo perfil se distinguen por su ticket (monto).
+ */
 function patitas_nombrar_grupos( &$grupos ) {
 	$perfiles = array(
-		'leales'  => array( 'Leales de alimento', 'Recordatorio de recompra y suscripción con 5 % de descuento.' ),
-		'riesgo'  => array( 'En riesgo de abandono', 'Cupón de regreso VUELVE10 por correo o WhatsApp (solo con consentimiento).' ),
-		'nuevos'  => array( 'Nuevos tutores', 'Kit de inicio, guía de cuidados y registro del perfil de la mascota.' ),
-		'ofertas' => array( 'Ocasionales y buscadores de ofertas', 'Aviso de ofertas y packs; campañas de temporada en redes sociales.' ),
+		'nuevos'      => array( 'Nuevos tutores', 'Kit de inicio, guía de cuidados y registro del perfil de la mascota.' ),
+		'riesgo'      => array( 'En riesgo de abandono', 'Cupón de regreso VUELVE10 por correo o WhatsApp (solo con consentimiento).' ),
+		'leales'      => array( 'Leales de alimento', 'Recordatorio de recompra y suscripción con 5 % de descuento.' ),
+		'ocasionales' => array( 'Ocasionales y buscadores de ofertas', 'Aviso de ofertas y packs; campañas de temporada en redes sociales.' ),
 	);
-	$libres = array_keys( $grupos );
-	$elegir = function ( $campo, $mayor ) use ( &$grupos, &$libres ) {
-		$sel = null;
-		foreach ( $libres as $g ) {
-			if ( null === $sel || ( $mayor ? $grupos[ $g ][ $campo ] > $grupos[ $sel ][ $campo ] : $grupos[ $g ][ $campo ] < $grupos[ $sel ][ $campo ] ) ) {
-				$sel = $g;
-			}
+	$por_perfil = array();
+	foreach ( $grupos as $g => $d ) {
+		if ( $d['f'] <= 1.3 ) {
+			$p = 'nuevos';
+		} elseif ( $d['r'] >= 90 ) {
+			$p = 'riesgo';
+		} elseif ( $d['f'] >= 3.5 ) {
+			$p = 'leales';
+		} else {
+			$p = 'ocasionales';
 		}
-		$libres = array_values( array_diff( $libres, array( $sel ) ) );
-		return $sel;
-	};
-	foreach ( array( array( 'leales', 'f', true ), array( 'riesgo', 'r', true ), array( 'nuevos', 'f', false ), array( 'ofertas', 'm', true ) ) as $regla ) {
-		if ( ! $libres ) {
-			break;
+		$grupos[ $g ]['nombre'] = $perfiles[ $p ][0];
+		$grupos[ $g ]['accion'] = $perfiles[ $p ][1];
+		$por_perfil[ $p ][]     = $g;
+	}
+	foreach ( $por_perfil as $lista ) {
+		if ( count( $lista ) < 2 ) {
+			continue;
 		}
-		$g                       = $elegir( $regla[1], $regla[2] );
-		$grupos[ $g ]['nombre']  = $perfiles[ $regla[0] ][0];
-		$grupos[ $g ]['accion']  = $perfiles[ $regla[0] ][1];
+		usort( $lista, function ( $a, $b ) use ( $grupos ) {
+			return $grupos[ $b ]['m'] <=> $grupos[ $a ]['m'];
+		} );
+		foreach ( $lista as $i => $g ) {
+			$grupos[ $g ]['nombre'] .= 0 === $i ? ' (ticket alto)' : ( count( $lista ) - 1 === $i ? ' (ticket bajo)' : ' (ticket medio)' );
+		}
 	}
-	foreach ( $libres as $g ) {
-		$grupos[ $g ]['nombre'] = 'Otros clientes';
-		$grupos[ $g ]['accion'] = 'Comunicación general.';
-	}
+	uasort( $grupos, function ( $a, $b ) {
+		return $b['f'] <=> $a['f'];
+	} );
 }

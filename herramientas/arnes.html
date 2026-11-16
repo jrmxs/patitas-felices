@@ -1,0 +1,11 @@
+<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0">
+<iframe id="wp" style="width:1366px;height:860px;border:0;display:block"></iframe>
+<script type="module">
+import { startPlaygroundWeb } from 'https://playground.wordpress.net/client/index.js';
+window.iniciar = async (blueprint) => {
+  window.client = await startPlaygroundWeb({ iframe: document.getElementById('wp'), remoteUrl: 'https://playground.wordpress.net/remote.html', blueprint });
+  await window.client.isReady();
+  return 'ok';
+};
+window.listo = true;
+</script></body></html>

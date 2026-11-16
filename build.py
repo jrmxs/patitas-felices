@@ -83,16 +83,34 @@ def empaquetar():
     print("zip:", os.path.getsize(destino) // 1024, "KB")
 
 
+META = {
+    "title": "Patitas Felices: tienda WooCommerce",
+    "description": "Prototipo académico (INACAP, E-Commerce) de tienda para mascotas en Copiapó sobre WordPress + WooCommerce.",
+    "author": "jrmxs",
+    "categories": ["WooCommerce"],
+}
+
+
 def blueprint():
     v = time.strftime("%Y%m%d%H%M%S")
+    # Principal: importa la copia lista del sitio (herramientas/instantanea.py) y actualiza las fechas.
+    rapido = {
+        "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+        "meta": META,
+        "landingPage": "/",
+        "preferredVersions": {"php": "8.3", "wp": "7.1"},
+        "steps": [
+            {"step": "importWordPressFiles", "wordPressFilesZip": {"resource": "url", "url": f"{REPO_RAW}/sitio.zip?v={v}"}},
+            {"step": "runPHP", "code": "<?php require_once '/wordpress/wp-load.php'; if ( function_exists( 'patitas_actualizar_fechas' ) ) { patitas_actualizar_fechas(); }"},
+            {"step": "login", "username": "felipe", "password": "patitas2026"},
+        ],
+    }
+    with open(os.path.join(AQUI, "blueprint.json"), "w", encoding="utf-8") as f:
+        json.dump(rapido, f, ensure_ascii=False, indent=2)
+    # Alternativa: construye todo desde cero con el plugin (más lento, muestra el proceso completo).
     bp = {
         "$schema": "https://playground.wordpress.net/blueprint-schema.json",
-        "meta": {
-            "title": "Patitas Felices: tienda WooCommerce",
-            "description": "Prototipo académico (INACAP, E-Commerce) de tienda para mascotas en Copiapó sobre WordPress + WooCommerce.",
-            "author": "jrmxs",
-            "categories": ["WooCommerce"],
-        },
+        "meta": META,
         "landingPage": "/",
         "preferredVersions": {"php": "8.3", "wp": "latest"},
         "steps": [
@@ -107,9 +125,9 @@ def blueprint():
             {"step": "login", "username": "felipe", "password": "patitas2026"},
         ],
     }
-    with open(os.path.join(AQUI, "blueprint.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(AQUI, "blueprint-desde-cero.json"), "w", encoding="utf-8") as f:
         json.dump(bp, f, ensure_ascii=False, indent=2)
-    print("blueprint v", v)
+    print("blueprints v", v)
 
 
 if __name__ == "__main__":

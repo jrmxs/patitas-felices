@@ -12,6 +12,13 @@ function patitas_instalar() {
 	add_filter( 'pre_wp_mail', '__return_false' );
 	add_filter( 'woocommerce_defer_transactional_emails', '__return_true' );
 	add_filter( 'woocommerce_allow_send_queued_transactional_email', '__return_false' );
+	// Ni tareas en segundo plano (Action Scheduler) por cada producto o pedido de ejemplo.
+	foreach ( array( 'pre_as_schedule_single_action', 'pre_as_enqueue_async_action', 'pre_as_schedule_recurring_action', 'pre_as_schedule_cron_action' ) as $filtro ) {
+		add_filter( $filtro, '__return_zero', 99 );
+	}
+	if ( ! defined( 'WP_IMPORTING' ) ) {
+		define( 'WP_IMPORTING', true );
+	}
 
 	$log = array( 'Instalación ' . gmdate( 'Y-m-d H:i:s' ) );
 	foreach ( array( 'opciones', 'paginas', 'catalogo', 'resenas', 'clientes', 'pedidos', 'envios', 'pagos', 'cupones', 'apariencia' ) as $etapa ) {
@@ -40,6 +47,75 @@ function patitas_instalar() {
 	file_put_contents( WP_CONTENT_DIR . '/patitas-instalacion.log', implode( "\n", $log ) . "\n" );
 	return $log;
 }
+
+/* ------------------------------------------------------------------ fechas relativas al día de hoy */
+
+/**
+ * La tienda demo se distribuye ya instalada (copia del sitio). Para que el historial siga siendo «reciente»
+ * (recordatorios de recompra, segmentos, reseñas), al abrirla se corren todas las fechas de pedidos y reseñas
+ * en el tiempo transcurrido desde que se armó la copia.
+ */
+function patitas_actualizar_fechas() {
+	$base  = (int) get_option( 'patitas_instalado' );
+	$delta = time() - $base;
+	if ( ! $base || $delta < HOUR_IN_SECONDS ) {
+		return 0;
+	}
+	global $wpdb;
+	$correr = function ( $valor ) use ( $delta ) {
+		if ( ! $valor || 0 === strpos( $valor, '0000' ) ) {
+			return $valor;
+		}
+		return gmdate( 'Y-m-d H:i:s', strtotime( $valor . ' UTC' ) + $delta );
+	};
+	// Pedidos en tablas clásicas (posts).
+	$filas = $wpdb->get_results( "SELECT ID, post_date, post_date_gmt, post_modified, post_modified_gmt FROM {$wpdb->posts} WHERE post_type = 'shop_order'", ARRAY_A );
+	foreach ( $filas as $f ) {
+		$id = $f['ID'];
+		unset( $f['ID'] );
+		$wpdb->update( $wpdb->posts, array_map( $correr, $f ), array( 'ID' => $id ) );
+	}
+	$metas = $wpdb->get_results( "SELECT meta_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_key IN ('_date_paid', '_date_completed', '_paid_date', '_completed_date')", ARRAY_A );
+	foreach ( $metas as $m ) {
+		$v = is_numeric( $m['meta_value'] ) ? (string) ( (int) $m['meta_value'] + $delta ) : $correr( $m['meta_value'] );
+		$wpdb->update( $wpdb->postmeta, array( 'meta_value' => $v ), array( 'meta_id' => $m['meta_id'] ) );
+	}
+	// Pedidos en tablas de alto rendimiento (HPOS), si existen.
+	$tabla = $wpdb->prefix . 'wc_orders';
+	if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $tabla ) ) === $tabla ) {
+		foreach ( $wpdb->get_results( "SELECT id, date_created_gmt, date_updated_gmt FROM {$tabla}", ARRAY_A ) as $f ) {
+			$id = $f['id'];
+			unset( $f['id'] );
+			$wpdb->update( $tabla, array_map( $correr, $f ), array( 'id' => $id ) );
+		}
+		$operacional = $wpdb->prefix . 'wc_order_operational_data';
+		foreach ( $wpdb->get_results( "SELECT id, date_paid_gmt, date_completed_gmt FROM {$operacional}", ARRAY_A ) as $f ) {
+			$id = $f['id'];
+			unset( $f['id'] );
+			$wpdb->update( $operacional, array_map( $correr, $f ), array( 'id' => $id ) );
+		}
+	}
+	// Reseñas.
+	foreach ( $wpdb->get_results( "SELECT comment_ID, comment_date, comment_date_gmt FROM {$wpdb->comments} WHERE comment_type = 'review'", ARRAY_A ) as $f ) {
+		$id = $f['comment_ID'];
+		unset( $f['comment_ID'] );
+		$wpdb->update( $wpdb->comments, array_map( $correr, $f ), array( 'comment_ID' => $id ) );
+	}
+	update_option( 'patitas_instalado', time() );
+	update_option( 'patitas_recalculo', time(), false );
+	wp_clear_scheduled_hook( 'patitas_recalcular_diario' );
+	wp_schedule_event( strtotime( 'tomorrow 03:00' ), 'daily', 'patitas_recalcular_diario' );
+	wp_cache_flush();
+	delete_transient( 'patitas_catalogo' );
+	return $delta;
+}
+
+// Respaldo: si el blueprint no lo ejecutó, se hace en la primera visita.
+add_action( 'init', function () {
+	if ( 'yes' === get_option( 'patitas_demo' ) && time() - (int) get_option( 'patitas_instalado' ) > HOUR_IN_SECONDS ) {
+		patitas_actualizar_fechas();
+	}
+}, 5 );
 
 /* ------------------------------------------------------------------ opciones generales */
 
@@ -96,6 +172,9 @@ function patitas_instalar_opciones() {
 		'woocommerce_show_marketplace_suggestions'    => 'no',
 		'woocommerce_allow_tracking'                  => 'no',
 		'woocommerce_thumbnail_cropping'              => '1:1',
+		'woocommerce_checkout_privacy_policy_text'    => 'Usaremos tus datos personales para procesar tu pedido, mejorar tu experiencia en este sitio y otros fines descritos en nuestra [privacy_policy].',
+		'woocommerce_registration_privacy_policy_text' => 'Usaremos tus datos personales para mejorar tu experiencia en este sitio, administrar tu cuenta y otros fines descritos en nuestra [privacy_policy].',
+		'woocommerce_checkout_terms_and_conditions_checkbox_text' => 'He leído y acepto los [terms] del sitio',
 		'woocommerce_permalinks'                      => array(
 			'product_base'           => 'producto',
 			'category_base'          => 'categoria-producto',
@@ -288,7 +367,9 @@ function patitas_instalar_catalogo() {
 	if ( get_option( 'patitas_mapa' ) ) {
 		return; // ya instalado
 	}
-	update_option( 'woocommerce_attribute_lookup_direct_updates', 'yes' );
+	// Carga masiva: los conteos de términos se calculan una sola vez al final.
+	update_option( 'woocommerce_attribute_lookup_direct_updates', 'no' );
+	wp_defer_term_counting( true );
 	$tax = array(
 		'especie'   => patitas_crear_atributo( 'Especie', 'especie' ),
 		'etapa'     => patitas_crear_atributo( 'Etapa de vida', 'etapa' ),
@@ -416,6 +497,25 @@ function patitas_instalar_catalogo() {
 	}
 	update_option( 'patitas_mapa', $mapa );
 	update_option( 'patitas_variaciones', $variaciones );
+	wp_defer_term_counting( false );
+	patitas_recontar_terminos();
+}
+
+/** Recalcula los conteos de categorías, etiquetas y atributos (los usan los filtros de la tienda). */
+function patitas_recontar_terminos() {
+	$taxonomias = array_merge( array( 'product_cat', 'product_tag' ), wc_get_attribute_taxonomy_names() );
+	foreach ( $taxonomias as $tax ) {
+		if ( ! taxonomy_exists( $tax ) ) {
+			continue;
+		}
+		$tt = get_terms( array( 'taxonomy' => $tax, 'hide_empty' => false, 'fields' => 'tt_ids' ) );
+		if ( $tt && ! is_wp_error( $tt ) ) {
+			wp_update_term_count_now( $tt, $tax );
+		}
+	}
+	if ( function_exists( 'wc_recount_all_terms' ) ) {
+		wc_recount_all_terms();
+	}
 }
 
 /* ------------------------------------------------------------------ reseñas */
@@ -443,7 +543,7 @@ function patitas_instalar_resenas() {
 		if ( ! $id ) {
 			continue;
 		}
-		$cantidad = 3 + ( $k % 3 );
+		$cantidad = 2 + ( $k % 2 );
 		$lista    = $textos[ $d['cat'] ] ?? $textos['Accesorios'];
 		$base     = $d['r'] >= 4.75 ? array( 5, 5, 5, 4, 5 ) : ( $d['r'] >= 4.55 ? array( 5, 4, 5, 4, 5 ) : array( 4, 5, 4, 4, 3 ) );
 		for ( $i = 0; $i < $cantidad; $i++ ) {
@@ -580,6 +680,14 @@ function patitas_instalar_pedidos() {
 	if ( get_option( 'patitas_pedidos_demo' ) ) {
 		return;
 	}
+	// Pedidos históricos: se crean sin los procesos automáticos de WooCommerce (correos, stock, estadísticas),
+	// que solo tienen sentido para pedidos nuevos. Las ventas por producto se calculan al final.
+	foreach ( array( 'woocommerce_order_status_completed', 'woocommerce_order_status_processing', 'woocommerce_order_status_changed',
+		'woocommerce_order_status_pending_to_processing', 'woocommerce_order_status_pending_to_completed', 'woocommerce_payment_complete',
+		'woocommerce_new_order', 'woocommerce_update_order', 'woocommerce_order_object_updated_props', 'woocommerce_before_order_object_save',
+		'woocommerce_after_order_object_save' ) as $gancho ) {
+		remove_all_actions( $gancho );
+	}
 	mt_srand( 2026 );
 	$perro = array(
 		array( 'p1', '15 kg', array( 'p7', 'p8' ) ),
@@ -655,12 +763,15 @@ function patitas_instalar_pedidos() {
 		patitas_crear_pedido( $felipe, $p[1], $p[0], $uid );
 		$total++;
 	}
-	// Los pedidos descuentan stock: se restablece el stock del catálogo original.
-	foreach ( patitas_productos_data() as $d ) {
-		$id = patitas_pid( $d['id'] );
-		if ( $id ) {
-			wc_update_product_stock( $id, (int) $d['stock'], 'set' );
+	// Ventas acumuladas por producto (popularidad del recomendador y orden «Más vendidos»).
+	$ventas = array();
+	foreach ( patitas_pedidos() as $pedido ) {
+		foreach ( $pedido->get_items() as $item ) {
+			$ventas[ $item->get_product_id() ] = ( $ventas[ $item->get_product_id() ] ?? 0 ) + $item->get_quantity();
 		}
+	}
+	foreach ( $ventas as $id => $n ) {
+		update_post_meta( $id, 'total_sales', $n );
 	}
 	update_option( 'patitas_pedidos_demo', $total );
 }
@@ -775,11 +886,10 @@ function patitas_instalar_apariencia() {
 	$menu = wp_get_nav_menu_object( 'Principal' );
 	if ( ! $menu ) {
 		$menu_id = wp_create_nav_menu( 'Principal' );
-		$tienda  = get_permalink( wc_get_page_id( 'shop' ) );
 		foreach ( array( 'Perros' => 'perros', 'Gatos' => 'gatos' ) as $titulo => $slug ) {
 			wp_update_nav_menu_item( $menu_id, 0, array(
 				'menu-item-title'  => $titulo,
-				'menu-item-url'    => add_query_arg( 'filter_especie', $slug, $tienda ),
+				'menu-item-url'    => '#pf-especie-' . $slug, // se convierte en el enlace real al mostrar el menú
 				'menu-item-type'   => 'custom',
 				'menu-item-status' => 'publish',
 			) );
@@ -822,7 +932,7 @@ function patitas_instalar_apariencia() {
 
 	// Barra lateral de la tienda con filtros nativos de WooCommerce y pie de página.
 	update_option( 'widget_woocommerce_layered_nav_filters', array( 2 => array( 'title' => 'Filtros activos' ), '_multiwidget' => 1 ) );
-	update_option( 'widget_woocommerce_product_categories', array( 2 => array( 'title' => 'Categorías', 'orderby' => 'order', 'dropdown' => 0, 'count' => 1, 'hierarchical' => 1, 'show_children_only' => 0, 'hide_empty' => 1, 'max_depth' => '' ), '_multiwidget' => 1 ) );
+	update_option( 'widget_woocommerce_product_categories', array( 2 => array( 'title' => 'Categorías', 'orderby' => 'name', 'dropdown' => 0, 'count' => 1, 'hierarchical' => 1, 'show_children_only' => 0, 'hide_empty' => 1, 'max_depth' => '' ), '_multiwidget' => 1 ) );
 	$filtro = function ( $titulo, $atributo ) {
 		return array( 'title' => $titulo, 'attribute' => $atributo, 'display_type' => 'list', 'query_type' => 'or' );
 	};
@@ -834,8 +944,9 @@ function patitas_instalar_apariencia() {
 		'_multiwidget' => 1,
 	) );
 	update_option( 'widget_woocommerce_price_filter', array( 2 => array( 'title' => 'Precio' ), '_multiwidget' => 1 ) );
+	// {{inicio}} se reemplaza por la dirección del sitio al mostrar el pie (cada sesión de Playground tiene otra URL).
 	$a = function ( $ruta, $texto ) {
-		return '<a href="' . esc_url( home_url( $ruta ) ) . '">' . $texto . '</a>';
+		return '<a href="{{inicio}}' . esc_attr( $ruta ) . '">' . $texto . '</a>';
 	};
 	update_option( 'widget_text', array(
 		2              => array( 'title' => 'Patitas Felices SpA', 'text' => 'Tienda para mascotas en Copiapó desde 2019. Despacho el mismo día en Copiapó, Caldera y Tierra Amarilla.<br><small>Sitio de ejemplo para evaluación académica (INACAP).</small>', 'filter' => true, 'visual' => true ),

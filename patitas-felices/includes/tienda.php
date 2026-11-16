@@ -17,6 +17,33 @@ add_action( 'wp_enqueue_scripts', function () {
 add_filter( 'woocommerce_resize_images', '__return_false' );
 add_filter( 'woocommerce_background_image_regeneration', '__return_false' );
 
+// Carrito, checkout y cuenta a ancho completo (sin barra lateral), como en el prototipo.
+add_action( 'wp', function () {
+	if ( function_exists( 'is_cart' ) && ( is_cart() || is_checkout() || is_account_page() ) ) {
+		remove_action( 'storefront_sidebar', 'storefront_get_sidebar', 10 );
+		add_filter( 'body_class', function ( $clases ) {
+			$clases[] = 'storefront-full-width-content';
+			$clases[] = 'pf-sin-lateral';
+			return $clases;
+		} );
+	}
+	// Miniaturas de «producto anterior / siguiente» en los bordes de la ficha.
+	remove_action( 'woocommerce_after_single_product_summary', 'storefront_single_product_pagination', 30 );
+} );
+
+// Enlaces guardados sin dominio: el sitio puede abrirse en cualquier dirección (Playground cambia la URL en cada sesión).
+add_filter( 'nav_menu_link_attributes', function ( $atributos ) {
+	if ( ! empty( $atributos['href'] ) && 0 === strpos( $atributos['href'], '#pf-especie-' ) ) {
+		$atributos['href'] = add_query_arg( 'filter_especie', substr( $atributos['href'], 12 ), wc_get_page_permalink( 'shop' ) );
+	}
+	return $atributos;
+} );
+foreach ( array( 'widget_text', 'widget_text_content' ) as $patitas_filtro ) {
+	add_filter( $patitas_filtro, function ( $texto ) {
+		return str_replace( '{{inicio}}', untrailingslashit( home_url() ), $texto );
+	}, 99 );
+}
+
 add_filter( 'storefront_credit_link', '__return_false' );
 add_filter( 'storefront_copyright_text', function () {
 	return '© 2026 Patitas Felices SpA · Prototipo académico INACAP: datos, marcas y precios ficticios';
@@ -78,6 +105,7 @@ function patitas_mostrar_productos( $recos, $titulo = '', $intro = '', $columnas
 	wp_reset_postdata();
 	wc_reset_loop();
 	echo '</section>';
+	$GLOBALS['patitas_razones'] = array(); // la explicación solo acompaña a este bloque
 }
 
 add_action( 'woocommerce_after_shop_loop_item', function () {
@@ -475,7 +503,7 @@ add_filter( 'woocommerce_cart_crosssell_ids', function ( $ids ) {
 	$recos = patitas_recomendar( array(
 		'contexto' => $contexto,
 		'mascotas' => patitas_pref( 'personalizacion' ) ? patitas_mascotas() : array(),
-		'limite'   => 4,
+		'limite'   => 3,
 	) );
 	foreach ( $recos as $r ) {
 		$GLOBALS['patitas_razones'][ $r['id'] ] = $r['razon'];
@@ -486,10 +514,10 @@ add_filter( 'woocommerce_product_cross_sells_products_heading', function () {
 	return 'Completa tu pedido';
 } );
 add_filter( 'woocommerce_cross_sells_total', function () {
-	return 4;
+	return 3;
 } );
 add_filter( 'woocommerce_cross_sells_columns', function () {
-	return 4;
+	return 3;
 } );
 
 /* ------------------------------------------------------------------ checkout */
