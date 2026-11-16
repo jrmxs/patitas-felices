@@ -869,7 +869,7 @@ function patitas_instalar_apariencia() {
 		'storefront_button_text_color'           => '#ffffff',
 		'storefront_button_alt_background_color' => '#C2187A',
 		'storefront_button_alt_text_color'       => '#ffffff',
-		'storefront_layout'                      => 'right',
+		'storefront_layout'                      => 'left', // filtros a la izquierda, como el prototipo
 		'background_color'                       => 'f5f8f7',
 	);
 	foreach ( $mods as $k => $v ) {

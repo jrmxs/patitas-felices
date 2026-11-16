@@ -19,7 +19,7 @@ add_filter( 'woocommerce_background_image_regeneration', '__return_false' );
 
 // Carrito, checkout y cuenta a ancho completo (sin barra lateral), como en el prototipo.
 add_action( 'wp', function () {
-	if ( function_exists( 'is_cart' ) && ( is_cart() || is_checkout() || is_account_page() ) ) {
+	if ( function_exists( 'is_cart' ) && ( is_cart() || is_checkout() || is_account_page() || is_product() ) ) {
 		remove_action( 'storefront_sidebar', 'storefront_get_sidebar', 10 );
 		add_filter( 'body_class', function ( $clases ) {
 			$clases[] = 'storefront-full-width-content';
